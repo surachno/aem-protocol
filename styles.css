@@ -1,0 +1,296 @@
+/* =========================================================
+   AEM-P DEMO — COMMENTED STYLESHEET
+   ---------------------------------------------------------
+   Main goals of this stylesheet:
+   1. Give the prototype a coherent dark UI
+   2. Organize the editor / verifier layout
+   3. Support the subtle watermark + hover reveal concept
+   4. Keep the styling readable for future reviewers
+
+   This is still prototype CSS, not a production design system.
+   ========================================================= */
+
+/* Use border-box sizing so padding and widths behave predictably */
+* {
+  box-sizing: border-box;
+}
+
+/* Global page defaults */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #0b1020;
+  color: #eef2ff;
+}
+
+body {
+  min-height: 100vh;
+}
+
+/* Basic link color */
+a {
+  color: #9cc3ff;
+}
+
+/* ---------------------------------------------------------
+   SHARED CONTROLS
+   ---------------------------------------------------------
+   Buttons, file input buttons, and textareas share one visual
+   language so the app feels cohesive.
+   --------------------------------------------------------- */
+button,
+input[type="file"]::file-selector-button,
+textarea {
+  border: 1px solid #334155;
+  background: #111827;
+  color: #eef2ff;
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+  cursor: text;
+}
+
+button:hover,
+input[type="file"]::file-selector-button:hover {
+  background: #1f2937;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------------------------------------------------------
+   OVERALL PAGE LAYOUT
+   --------------------------------------------------------- */
+.container {
+  max-width: 1460px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  margin-bottom: 18px;
+}
+
+.header h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.header p {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+/* Top row for mode switching and current state display */
+.topRow {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 14px 0 0;
+}
+
+/* Three-column app layout:
+   left   = controls / logs
+   center = canvas preview
+   right  = manifest / verification output */
+.grid {
+  display: grid;
+  grid-template-columns: 380px 1fr 380px;
+  gap: 18px;
+  align-items: start;
+}
+
+/* Shared panel/card styling */
+.panel {
+  background: rgba(17, 24, 39, 0.92);
+  border: 1px solid #243042;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+}
+
+.panel h2 {
+  margin: 0 0 12px;
+  font-size: 18px;
+}
+
+.panel h3 {
+  margin: 16px 0 10px;
+  font-size: 13px;
+  color: #bfdbfe;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Small reusable layout helpers */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.small {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.45;
+}
+
+/* ---------------------------------------------------------
+   STATUS BADGES
+   --------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #31435c;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  background: #0f172a;
+}
+
+/* Verification result colors */
+.good {
+  border-color: #166534;
+  background: rgba(20, 83, 45, 0.35);
+}
+
+.warn {
+  border-color: #92400e;
+  background: rgba(146, 64, 14, 0.28);
+}
+
+.bad {
+  border-color: #991b1b;
+  background: rgba(127, 29, 29, 0.28);
+}
+
+/* ---------------------------------------------------------
+   CANVAS SURFACE
+   ---------------------------------------------------------
+   The checkerboard-like surface makes the preview area feel
+   like an editing surface and helps overlays stand out.
+   --------------------------------------------------------- */
+.canvasWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 640px;
+  overflow: auto;
+  background:
+    linear-gradient(45deg, #101827 25%, transparent 25%),
+    linear-gradient(-45deg, #101827 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #101827 75%),
+    linear-gradient(-45deg, transparent 75%, #101827 75%);
+  background-size: 24px 24px;
+  background-position: 0 0, 0 12px, 12px -12px, -12px 0px;
+  border-radius: 16px;
+  border: 1px solid #243042;
+  padding: 18px;
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+  background: #111827;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------------------------------------------------------
+   JSON / DEBUG BLOCKS
+   --------------------------------------------------------- */
+pre {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: #09101d;
+  border: 1px solid #213048;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 12px;
+  color: #dbeafe;
+  max-height: 620px;
+  overflow: auto;
+}
+
+/* Event log styling */
+.log {
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid #213048;
+  border-radius: 12px;
+  background: #09101d;
+  padding: 12px;
+}
+
+.logItem {
+  padding: 8px 0;
+  border-bottom: 1px solid #172338;
+  font-size: 13px;
+}
+
+.logItem:last-child {
+  border-bottom: 0;
+}
+
+/* Key/value explanation blocks */
+.kv {
+  display: grid;
+  grid-template-columns: 126px 1fr;
+  gap: 8px;
+  font-size: 13px;
+  padding: 6px 0;
+}
+
+.kv .k {
+  color: #93c5fd;
+}
+
+.kv .v {
+  color: #e2e8f0;
+}
+
+/* Small labels above sliders */
+.sliderLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #bfdbfe;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE FALLBACK
+   ---------------------------------------------------------
+   Collapse to one column on smaller screens.
+   --------------------------------------------------------- */
+@media (max-width: 1220px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .canvasWrap {
+    min-height: 420px;
+  }
+}

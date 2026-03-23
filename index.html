@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AEM-P — Hover + EXT Demo</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <!--
+    React mounts the whole prototype into this single root element.
+
+    Keeping the entire UI inside one root makes the demo easier to review:
+    editor mode and verifier mode share the same layout system and state model.
+  -->
+  <div id="root"></div>
+
+  <!--
+    Prototype dependency loading:
+    React is loaded from a CDN to keep this demo lightweight and easy to open.
+    When viewing locally, the browser will usually still need internet access.
+  -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <!-- Main application logic -->
+  <script src="./app.js"></script>
+</body>
+</html>
