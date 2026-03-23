@@ -76,61 +76,67 @@
    *
    * IMPORTANT DESIGN LESSON
    * -----------------------
-   * The main problem was not "purity" by itself. The bigger issue was that
-   * earlier versions mixed canonical provenance fields with derived export/UI
-   * fields. That created hidden circularity and signature drift.
+   * Earlier prototype versions signed the manifest too late / too loosely:
+   * fields such as hidden_watermark, viewer_embed, and exported image hash
+   * were mixed into the signed body. That created circular dependencies:
+   *
+   * - hidden watermark wanted to store the manifest hash
+   * - manifest hash changed when hidden_watermark was added
+   * - exported image hash changed after rendering / embedding
+   * - verifier then saw mismatches such as:
+   *   - signature_invalid
+   *   - hidden_manifest_hash_mismatch
    *
    * WHAT WE LEARNED
    * ---------------
-   * A reliable verifier needs one stable signing boundary.
+   * A verifier only works reliably when there is one stable, canonical
+   * manifest body. Everything derived later for export or UI display should
+   * stay OUTSIDE that canonical signed boundary.
    *
-   * The canonical signed body should contain only stable provenance fields:
-   * - identity
-   * - state
-   * - chain info
-   * - origin/import/edit metadata
-   * - payload hash
-   *
-   * It should NOT include:
-   * - self-referential hash/signature fields
-   * - UI-only fields
-   * - export-only convenience fields
-   * - watermark payload fields derived from the manifest hash
-   *
-   * WHY THIS MATTERS FOR DEVELOPERS
-   * -------------------------------
-   * If you add a field and it changes only because the package was rendered,
-   * exported, or displayed, it probably does NOT belong in the signed body.
-   * Adding it anyway can reintroduce:
-   * - signature_invalid
-   * - hidden_manifest_hash_mismatch
-   *
-   * NOTE ON PURITY
+   * DEVELOPER RULE
    * --------------
-   * Not all functions in this prototype are pure, and that is normal:
-   * canvas drawing, random IDs, timestamps, localStorage, downloads, and
-   * React state updates are intentionally impure.
+   * Only sign stable provenance fields.
+   * Do NOT sign viewer-only or export-only convenience fields.
    *
-   * The important rule is not "make everything pure".
-   * The important rule is:
-   * keep the canonical manifest derivation deterministic and stable.
+   * Fields intentionally excluded from signing:
+   * - signature_b64
+   * - manifest_hash
+   * - manifest_hash_short
+   * - visible_mark
+   * - hidden_watermark
+   * - exported_canvas_hash
+   * - rendered_at
+   * - viewer_embed
+   * - hover_reveal_enabled
+   *
+   * If you later add new fields, decide carefully whether they belong in:
+   * 1. the canonical signed manifest, or
+   * 2. the derived export/package layer
    */
   function stripManifestForSigning(m) {
     const clone = JSON.parse(JSON.stringify(m));
 
-    // Self-referential fields: never sign these.
+    /**
+     * IMPORTANT:
+     * The canonical signed body must not include self-referential hash fields.
+     *
+     * Why:
+     * - manifest_hash cannot be part of the body used to compute manifest_hash
+     * - manifest_hash_short is derived from manifest_hash
+     * - visible_mark is a presentation/export convenience field
+     *
+     * If these are left in, the signature boundary drifts and normal exports can
+     * fail verification with signature_invalid.
+     */
     delete clone.signature_b64;
     delete clone.manifest_hash;
     delete clone.manifest_hash_short;
-
-    // Derived export / viewer fields: never sign these.
     delete clone.visible_mark;
     delete clone.hidden_watermark;
     delete clone.exported_canvas_hash;
     delete clone.rendered_at;
     delete clone.viewer_embed;
     delete clone.hover_reveal_enabled;
-
     return clone;
   }
 
@@ -401,15 +407,13 @@
    *
    * IMPORTANT:
    * This function signs the canonical manifest only.
-   * The signed body is stripManifestForSigning(manifest), which excludes:
-   * - self-referential hash/signature fields
-   * - export-time convenience fields
-   * - viewer-only fields
+   * It does NOT sign export-time convenience fields because those fields are
+   * intentionally excluded by stripManifestForSigning().
    *
    * WHY DEVELOPERS SHOULD CARE
    * --------------------------
-   * If you move export-only fields back into the signed body, the old verifier
-   * problems can come back:
+   * If you move export-only fields OR self-referential hash fields back into
+   * the signed body, the old verifier problems can come back:
    * - signature_invalid
    * - hidden_manifest_hash_mismatch
    *
@@ -1406,8 +1410,8 @@
           "Prototype demo with separate generated vs external paths, a subtle pixel watermark, hover reveal, lightweight manifest, and verifier flow."
         ),
         e("div", { className: "topRow", key: "topRow" }, [
-          e("button", { key: "editorMode", onClick: () => setMode("editor") }, "Editor mode"),
-          e("button", { key: "verifierMode", onClick: () => setMode("verifier") }, "Verifier mode"),
+          e("button", { className: "btnMode", key: "editorMode", onClick: () => setMode("editor") }, "Editor mode"),
+          e("button", { className: "btnMode", key: "verifierMode", onClick: () => setMode("verifier") }, "Verifier mode"),
           manifest ? e("span", { className: "badge", key: "state" }, "Current state: " + stateBadge) : null,
         ]),
       ]),
@@ -1425,7 +1429,7 @@
 
                 e("h3", { key: "trustedHeading" }, "Trusted generated path"),
                 e("div", { className: "row", key: "trustedRow" }, [
-                  e("button", { onClick: () => initializeGeneratedCanvas(createDemoBaseCanvas(), "demo_generator"), disabled: busy }, "New generated demo image → AI·0"),
+                  e("button", { className: "btnGenerate", onClick: () => initializeGeneratedCanvas(createDemoBaseCanvas(), "demo_generator"), disabled: busy }, "New generated demo image → AI·0"),
                 ]),
 
                 e("h3", { key: "externalHeading" }, "External import path"),
@@ -1436,11 +1440,11 @@
 
                 e("h3", { key: "editHeading" }, "Trusted edits"),
                 e("div", { className: "row", key: "editRow" }, [
-                  e("button", { onClick: () => applyTrustedEdit("filtered.grayscale", grayscale), disabled: busy }, "Grayscale"),
-                  e("button", { onClick: () => applyTrustedEdit("filtered.invert", invert), disabled: busy }, "Invert"),
-                  e("button", { onClick: () => applyTrustedEdit("filtered.brighten", (c) => brighten(c, 20)), disabled: busy }, "Brighten"),
-                  e("button", { onClick: () => applyTrustedEdit("rotated.90", rotate90), disabled: busy }, "Rotate 90°"),
-                  e("button", { onClick: () => applyTrustedEdit("cropped.center", cropCenter), disabled: busy }, "Crop center"),
+                  e("button", { className: "btnEdit", onClick: () => applyTrustedEdit("filtered.grayscale", grayscale), disabled: busy }, "Grayscale"),
+                  e("button", { className: "btnEdit", onClick: () => applyTrustedEdit("filtered.invert", invert), disabled: busy }, "Invert"),
+                  e("button", { className: "btnEdit", onClick: () => applyTrustedEdit("filtered.brighten", (c) => brighten(c, 20)), disabled: busy }, "Brighten"),
+                  e("button", { className: "btnEdit", onClick: () => applyTrustedEdit("rotated.90", rotate90), disabled: busy }, "Rotate 90°"),
+                  e("button", { className: "btnEdit", onClick: () => applyTrustedEdit("cropped.center", cropCenter), disabled: busy }, "Crop center"),
                 ]),
                 e("div", { className: "small", key: "editRules" }, "Edit rules: AI states increment, EXT stays EXT, X stays X."),
 
@@ -1456,22 +1460,22 @@
 
                 e("h3", { key: "specialHeading" }, "Special actions"),
                 e("div", { className: "row", key: "specialRow" }, [
-                  e("button", { onClick: metadataOnly, disabled: busy }, "Metadata only"),
-                  e("button", { onClick: () => breakChain("edited_outside_trusted_toolchain"), disabled: busy }, "Force broken chain → X"),
+                  e("button", { className: "btnSpecial", onClick: metadataOnly, disabled: busy }, "Metadata only"),
+                  e("button", { className: "btnSpecial", onClick: () => breakChain("edited_outside_trusted_toolchain"), disabled: busy }, "Force broken chain → X"),
                 ]),
 
                 e("h3", { key: "exportHeading" }, "Export"),
                 e("div", { className: "row", key: "exportRow" }, [
-                  e("button", { onClick: exportPng, disabled: busy }, "Download PNG"),
-                  e("button", { onClick: exportManifest, disabled: busy || !manifest }, "Download manifest"),
-                  e("button", { onClick: exportPackage, disabled: busy || !manifest }, "Download package"),
+                  e("button", { className: "btnExport", onClick: exportPng, disabled: busy }, "Download PNG"),
+                  e("button", { className: "btnExport", onClick: exportManifest, disabled: busy || !manifest }, "Download manifest"),
+                  e("button", { className: "btnExport", onClick: exportPackage, disabled: busy || !manifest }, "Download package"),
                 ]),
 
                 e("h3", { key: "tamperHeading" }, "Tamper test"),
                 e("div", { className: "small", key: "tamperHint" }, "Patch the manifest without re-signing it, then send it to verifier mode."),
                 e("textarea", { value: tamperJson, onChange: (ev) => setTamperJson(ev.target.value) }),
                 e("div", { className: "row", key: "tamperRow" }, [
-                  e("button", { onClick: tamperManifestJson, disabled: busy || !manifest }, "Send tampered package to verifier"),
+                  e("button", { className: "btnSpecial", onClick: tamperManifestJson, disabled: busy || !manifest }, "Send tampered package to verifier"),
                 ]),
               ])),
 
@@ -1485,6 +1489,23 @@
                     )
                   : e("div", { className: "small" }, "No events yet.")
               )),
+              panel("Help / Test Guide", e("div", { className: "stack" }, [
+                e("div", { className: "small", key: "g1" }, "Quick tests:"),
+                e("div", { className: "small", key: "g2" }, "1. New generated demo image → AI·0, then apply one edit and verify the package."),
+                e("div", { className: "small", key: "g3" }, "2. Upload an external image → EXT, export package, verify it, and confirm the verifier shows Verified: EXT."),
+                e("div", { className: "small", key: "g4" }, "3. Click Metadata only and verify that the visible state stays the same while the package still verifies."),
+                e("div", { className: "small", key: "g5" }, "4. Force broken chain → X, export, and confirm the broken state behavior."),
+                e("div", { className: "small", key: "g6" }, "5. Use the tamper test and confirm the verifier returns X."),
+                e("h3", { key: "hmeta" }, "Metadata only"),
+                e("div", { className: "small", key: "m1" }, "Metadata only creates a new signed version without changing the visible state or edit count."),
+                e("div", { className: "small", key: "m2" }, "Use it to test whether provenance updates can happen without counting as visual edits."),
+                e("div", { className: "small", key: "m3" }, "Expected result after export + verify: same visible state, still valid."),
+                e("h3", { key: "htamper" }, "Tamper test"),
+                e("div", { className: "small", key: "t1" }, "The tamper test modifies the manifest without recomputing the signature. The verifier should reject it."),
+                e("div", { className: "small", key: "t2" }, "Useful examples:"),
+                e("pre", { key: "t3" }, '{"visible_state":"AI·9"}\n{"edit_count_verified":0}\n{"origin_type":"ai_generated"}\n{"chain_status":"valid"}'),
+                e("div", { className: "small", key: "t4" }, "Expected result: Verification failed → X, often with signature_invalid or another mismatch reason.")
+              ])),
             ]),
 
             e("div", { key: "center" },
@@ -1505,7 +1526,7 @@
                 e("div", { className: "kv", key: "n3" }, [e("div", { className: "k" }, "Visible mark"), e("div", { className: "v" }, "Subtle, pixelated, and brightens on hover")]),
                 e("div", { className: "kv", key: "n4" }, [e("div", { className: "k" }, "Hidden mark"), e("div", { className: "v" }, "Prototype LSB payload in pixel data")]),
                 e("div", { className: "kv", key: "n5" }, [e("div", { className: "k" }, "Verifier"), e("div", { className: "v" }, "Checks canonical signature, hidden payload, and exported image hash")]),
-                e("div", { className: "small", key: "n6" }, "Developer note: not all functions are pure in this prototype, and that is okay. The critical requirement is a stable canonical manifest boundary. If future changes mix UI/export fields back into the signed body, verifier bugs can return."),
+                e("div", { className: "small", key: "n6" }, "Developer note: the signed manifest and the export package are intentionally treated as two layers. If future changes mix export-only fields back into the signed manifest body, verifier mismatches can return."),
               ])),
             ]),
           ])
@@ -1523,6 +1544,13 @@
                 e("h3", { key: "loadHeading" }, "Load package"),
                 e("input", { type: "file", accept: ".json,application/json", onChange: loadPackageFile }),
                 e("div", { className: "small", key: "verifyHint" }, "Expected file: a JSON package containing the rendered PNG as a data URL plus the manifest."),
+              ])),
+              panel("Help / Test Guide", e("div", { className: "stack" }, [
+                e("div", { className: "small", key: "vh1" }, "Verifier quick guide:"),
+                e("div", { className: "small", key: "vh2" }, "Generated path should verify as AI·0 or a later AI state."),
+                e("div", { className: "small", key: "vh3" }, "External path should verify as EXT."),
+                e("div", { className: "small", key: "vh4" }, "Tampered packages should fail and return X."),
+                e("div", { className: "small", key: "vh5" }, "Metadata-only packages should keep the same visible state and still verify."),
               ])),
             ]),
 
