@@ -1,6 +1,6 @@
-🧾 AEMP — AI Edit Provenance
+🧾 AEM-P — AI Edit Mark Provenance
 
-AEMP is a system that tracks and verifies how AI-generated images change over time.
+AEM-P is a system that tracks and verifies how AI-generated images change over time.
 
 ❌ The problem
 
@@ -20,7 +20,7 @@ no audit trail for AI media
 
 ✅ The solution
 
-AEMP introduces a visible + cryptographic edit history layer:
+AEM-P introduces a visible + cryptographic edit history layer:
 
 AI·0 → original AI image
 AI·1–8 → verified edits
@@ -36,7 +36,7 @@ embedded in the image itself
 
 Most systems track origin.
 
-AEMP tracks evolution.
+AEM-P tracks evolution.
 
 ⚙️ How it works
 Subtle pixel watermark embedded in image
