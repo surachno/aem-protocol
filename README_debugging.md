@@ -1,0 +1,16 @@
+Validation:
+- node --check app.js exit code: 0
+
+This is still a prototype and still loads React from a CDN.
+
+
+What we learned:
+- a stable canonical manifest is required for reliable verification
+- export-only fields should stay outside the signed manifest body
+- hidden watermark data should reference the canonical manifest hash
+- developers should treat signed provenance fields and derived export fields as separate layers
+
+Additional note:
+- not all functions are pure, and that is okay in this prototype
+- the critical requirement is a deterministic canonical signed manifest boundary
+- self-referential and UI/export-derived fields are excluded from signing
