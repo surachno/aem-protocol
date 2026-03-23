@@ -1,80 +1,147 @@
-AIM Protocol (AEM-P)
+# AIM Protocol (AEM-P)
+
 Hi — and welcome 👋
-This is a small prototype exploring an idea:
-What if AI-generated images could carry a simple, visible history of how they’ve been edited?
-This project is my attempt at that. This repository was built with substantial AI assistance and human review.
 
-🧠 The idea
+This repository is a small prototype exploring a simple idea:
+
+> What if AI-generated images could carry a visible, human-readable history of how they’ve been edited?
+
+That’s what AIM Protocol is about.
+
+AIM stands for **Adaptive Integrity Model**.  
+AEM-P is the more technical name: **AI Edit Mark Protocol**.
+
+## What this is
+
+This repo contains an experimental prototype for tracking how AI images evolve over time.
+
 Instead of only asking:
-“Was this image AI-generated?”
-AIM tries to answer:
-“What happened to this image after it was created?”
-It does this with a simple state system:
-AI·0 → original AI-generated image
-AI·1–8 → verified edits
-AI·9 → many edits
-EXT → external image (not AI-origin certified)
-X → broken or unverifiable
 
-✨ What’s in this repo
-A browser-based prototype that shows:
-a subtle (almost hidden) watermark
-a hover-to-reveal effect
-a simple edit counter
-a JSON “manifest” that tracks changes
-a basic verifier
-It’s intentionally lightweight and easy to explore.
+> “Was this image AI-generated?”
 
-🧪 Try it
-Just open:
-index.html
+AIM tries to also answer:
 
-No build step needed.
+> “What happened to this image after it was created?”
 
-⚠️ Project status
-This is a prototype / exploration project.
-not actively maintained
-not production-ready
-no guarantees of correctness or security
+The prototype uses a simple state system:
+
+- `AI·0` → original AI-generated image
+- `AI·1–8` → verified edits
+- `AI·9` → many verified edits
+- `EXT` → external image (not AI-origin certified)
+- `X` → broken or unverifiable provenance
+
+## What’s in here
+
+This project currently includes:
+
+- a browser-based prototype
+- a subtle visible watermark concept
+- a hover-to-reveal viewer effect
+- a lightweight manifest format
+- a simple verifier flow
+- protocol notes and repo documentation
+
+It is intentionally lightweight and easy to inspect.
+
+## Project status
+
+This is a **prototype / exploration project**.
+
+Please assume:
+
+- it is **not production-ready**
+- it is **not actively maintained**
+- it comes **with no guarantees**
+- you use it **at your own risk**
+
 I’m sharing it as:
-a concept
-a conversation starter
-something others might build on
 
-🧩 Important limitations
-This project does not implement:
-secure key management
-strong or attack-resistant watermarking
-production-grade verification
-cross-platform trust infrastructure
+- a concept
+- a conversation starter
+- a reference point for future experiments
+
+## AI assistance and human review
+
+This repository was built with substantial AI assistance and human review.
+
+The concept, framing, state model, documentation, and review decisions are human-directed.  
+The implementation was AI-assisted and should be treated accordingly: useful for exploration, but not something to trust blindly.
+
+If you use or build on this project, please review the code yourself and make your own decisions about correctness, safety, and suitability.
+
+## Important limitations
+
+This prototype does **not** implement:
+
+- secure key management
+- production-grade watermarking
+- strong attack resistance
+- cross-platform trust infrastructure
+- hardened verification guarantees
+- legal, compliance, or policy-grade provenance
+
 So please don’t rely on it for anything critical.
 
-🔐 License
-MIT — use it however you like.
-That means you can:
-reuse the code
-modify it
-build on it
-But also:
-You use it at your own risk.
+## Running it locally
 
-💬 Why I made this
-AI images are everywhere now, and they change a lot after being created.
-I was curious whether a simple, human-readable “edit history” could exist alongside them.
-This repo is just one possible direction.
+If the prototype uses plain browser files, opening `index.html` may be enough.
 
-🙌 If you’re interested
-Feel free to:
-explore
-fork
-experiment
-take the idea further
-I’m not actively developing this, but I’m happy it might be useful to someone else.
+For example:
 
-🌍 Big picture
+```bash
+open index.html
+```
+
+Some versions of the demo load React from a CDN, so an internet connection may still be needed in the browser.
+
+## Why I made this
+
+AI images are everywhere now, and they often change a lot after being created.
+
+I got curious about whether there could be a simple, human-readable way to show:
+
+- where an image started
+- whether it stayed in a trusted edit flow
+- and when that trust broke
+
+This repo is one attempt at exploring that idea.
+
+## License
+
+MIT.
+
+That means you are generally free to:
+
+- use the code
+- modify it
+- fork it
+- build on it
+
+But it also means:
+
+> this project is provided “as is”, without warranty.
+
+See `LICENSE` and `DISCLAIMER.md`.
+
+## Contributing
+
+This project is not actively maintained, but thoughtful contributions are still welcome.
+
+Please read:
+
+- `CONTRIBUTING.md`
+- `docs/spec.md`
+
+before making bigger changes.
+
+## Big picture
+
 If this idea ever grows, I imagine something like:
-a shared way to track how AI media evolves over time
-But for now — this is just a small prototype.
-Thanks for taking a look.
 
+> a shared way to track how AI media evolves over time
+
+But for now, this is just a small prototype.
+
+Thanks for taking a look.
 
