@@ -1,0 +1,1 @@
+Fixed verifier bug: manifests are now signed after all exported fields are attached, so a normal trusted export should no longer fail with signature_invalid.
