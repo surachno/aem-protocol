@@ -44,8 +44,8 @@ button,
 input[type="file"]::file-selector-button,
 textarea {
   border: 1px solid #334155;
-  background: #081738; /*111827*/
-  color: #717279;/*eef2ff*/
+  background: #111827;
+  color: #eef2ff;
   border-radius: 10px;
   padding: 10px 14px;
   cursor: pointer;
@@ -62,7 +62,6 @@ textarea {
 button:hover,
 input[type="file"]::file-selector-button:hover {
   background: #1f2937;
-  color: #eef2ff;
 }
 
 button:disabled {
@@ -295,3 +294,61 @@ input[type="range"] {
     min-height: 420px;
   }
 }
+
+
+/* ---------------------------------------------------------
+   VIEW-SPECIFIC BUTTON ACCENTS
+   ---------------------------------------------------------
+   These classes make key actions stand out a bit more while
+   keeping the palette restrained and calm.
+   --------------------------------------------------------- */
+
+   .btnMode, .btnGenerate, .btnEdit, .btnSpecial, .btnExport {
+  background: linear-gradient(180deg, #17324a 0%, #112638 100%);
+  border-color: #3d6282;
+}
+.btnMode:hover, .btnGenerate:hover, .btnEdit:hover, .btnSpecial:hover, .btnExport:hover  {
+  background: linear-gradient(180deg, #214364 0%, #16324a 100%);
+}
+
+/* Alternative colors for more visual distinction between button types:
+.btnMode {
+  background: linear-gradient(180deg, #162033 0%, #121a2a 100%);
+  border-color: #3a4a63;
+}
+.btnMode:hover {
+  background: linear-gradient(180deg, #1d2a42 0%, #172133 100%);
+}
+
+.btnGenerate {
+  background: linear-gradient(180deg, #17324a 0%, #112638 100%);
+  border-color: #3d6282;
+}
+.btnGenerate:hover {
+  background: linear-gradient(180deg, #214364 0%, #16324a 100%);
+}
+
+.btnEdit {
+  background: linear-gradient(180deg, #233223 0%, #192519 100%);
+  border-color: #4a6a4a;
+}
+.btnEdit:hover {
+  background: linear-gradient(180deg, #304730 0%, #203120 100%);
+}
+
+.btnSpecial {
+  background: linear-gradient(180deg, #3b231f 0%, #2b1916 100%);
+  border-color: #7a4a44;
+}
+.btnSpecial:hover {
+  background: linear-gradient(180deg, #4d2d28 0%, #361f1b 100%);
+}
+
+.btnExport {
+  background: linear-gradient(180deg, #2d2342 0%, #211930 100%);
+  border-color: #5d4a86;
+}
+.btnExport:hover {
+  background: linear-gradient(180deg, #3b2d57 0%, #291f3c 100%);
+}
+*/
