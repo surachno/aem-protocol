@@ -72,12 +72,65 @@
   }
 
   /**
-   * Remove fields that should not be part of the signed manifest body.
-   * In this prototype the signature itself is excluded from the signed payload.
+   * Return the canonical manifest body used for hashing and signing.
+   *
+   * IMPORTANT DESIGN LESSON
+   * -----------------------
+   * The main problem was not "purity" by itself. The bigger issue was that
+   * earlier versions mixed canonical provenance fields with derived export/UI
+   * fields. That created hidden circularity and signature drift.
+   *
+   * WHAT WE LEARNED
+   * ---------------
+   * A reliable verifier needs one stable signing boundary.
+   *
+   * The canonical signed body should contain only stable provenance fields:
+   * - identity
+   * - state
+   * - chain info
+   * - origin/import/edit metadata
+   * - payload hash
+   *
+   * It should NOT include:
+   * - self-referential hash/signature fields
+   * - UI-only fields
+   * - export-only convenience fields
+   * - watermark payload fields derived from the manifest hash
+   *
+   * WHY THIS MATTERS FOR DEVELOPERS
+   * -------------------------------
+   * If you add a field and it changes only because the package was rendered,
+   * exported, or displayed, it probably does NOT belong in the signed body.
+   * Adding it anyway can reintroduce:
+   * - signature_invalid
+   * - hidden_manifest_hash_mismatch
+   *
+   * NOTE ON PURITY
+   * --------------
+   * Not all functions in this prototype are pure, and that is normal:
+   * canvas drawing, random IDs, timestamps, localStorage, downloads, and
+   * React state updates are intentionally impure.
+   *
+   * The important rule is not "make everything pure".
+   * The important rule is:
+   * keep the canonical manifest derivation deterministic and stable.
    */
   function stripManifestForSigning(m) {
     const clone = JSON.parse(JSON.stringify(m));
+
+    // Self-referential fields: never sign these.
     delete clone.signature_b64;
+    delete clone.manifest_hash;
+    delete clone.manifest_hash_short;
+
+    // Derived export / viewer fields: never sign these.
+    delete clone.visible_mark;
+    delete clone.hidden_watermark;
+    delete clone.exported_canvas_hash;
+    delete clone.rendered_at;
+    delete clone.viewer_embed;
+    delete clone.hover_reveal_enabled;
+
     return clone;
   }
 
@@ -342,6 +395,36 @@
       new TextEncoder().encode(JSON.stringify(stripManifestForSigning(manifest)))
     );
   }
+
+  /**
+   * Finalize the canonical manifest by hashing and signing it.
+   *
+   * IMPORTANT:
+   * This function signs the canonical manifest only.
+   * The signed body is stripManifestForSigning(manifest), which excludes:
+   * - self-referential hash/signature fields
+   * - export-time convenience fields
+   * - viewer-only fields
+   *
+   * WHY DEVELOPERS SHOULD CARE
+   * --------------------------
+   * If you move export-only fields back into the signed body, the old verifier
+   * problems can come back:
+   * - signature_invalid
+   * - hidden_manifest_hash_mismatch
+   *
+   * So whenever you extend the manifest schema, ask:
+   * "Is this a stable provenance field, or just a derived export/UI field?"
+   */
+  async function finalizeManifest(manifest) {
+    const privateKey = await getOrCreateSigningKey();
+    const finalized = JSON.parse(JSON.stringify(manifest));
+    finalized.manifest_hash = await sha256Hex(JSON.stringify(stripManifestForSigning(finalized)));
+    finalized.manifest_hash_short = finalized.manifest_hash.slice(0, 16);
+    finalized.signature_b64 = await signManifest(finalized, privateKey);
+    return finalized;
+  }
+
 
   /* =========================================================
      HIDDEN WATERMARK HELPERS
@@ -707,7 +790,7 @@
     const publicJwk = await getPublicJwk(privateKey);
     const payloadCanvasHash = await canvasHash(canvas);
 
-    const manifest = {
+    return {
       protocol_version: PROTOCOL_VERSION,
       asset_id: prevManifest ? prevManifest.asset_id : uuidLike(),
       manifest_type: manifestType,
@@ -715,7 +798,7 @@
       origin_type: originType,
       source_label: sourceLabel || (prevManifest && prevManifest.source_label) || "demo",
       tool_id: "aem_p.demo",
-      tool_version: "0.4.0",
+      tool_version: "0.4.1",
       created_at: prevManifest ? prevManifest.created_at : nowIso(),
       updated_at: nowIso(),
       action_type: actionType,
@@ -727,13 +810,8 @@
       payload_canvas_hash: payloadCanvasHash,
       viewer_style: viewerStyle,
       public_key_jwk: publicJwk,
+      signature_b64: null,
     };
-
-    manifest.manifest_hash = await sha256Hex(JSON.stringify(stripManifestForSigning(manifest)));
-    manifest.manifest_hash_short = manifest.manifest_hash.slice(0, 16);
-    manifest.signature_b64 = await signManifest(manifest, privateKey);
-
-    return manifest;
   }
 
   /**
@@ -746,14 +824,56 @@
    * 4. Attach viewer snippets
    */
   async function createStateBundle(payloadCanvas, manifest, hoverOn, viewerStyle) {
-    const rendered = copyCanvas(payloadCanvas);
-    const ctx = rendered.getContext("2d");
+    /**
+     * Build the final export bundle.
+     *
+     * IMPORTANT DESIGN LESSON
+     * -----------------------
+     * Earlier versions of this prototype tried to make the manifest sign
+     * everything, including fields that only exist after export/render time.
+     * That caused a circular dependency:
+     *
+     * - hidden watermark stored manifest hash
+     * - exported image hash depended on final rendered image
+     * - final manifest changed again after those fields were added
+     * - verifier then rejected the package
+     *
+     * WHAT THIS VERSION DOES INSTEAD
+     * ------------------------------
+     * This function separates the process into two layers:
+     *
+     * 1. Canonical manifest (stable, signed)
+     *    - provenance fields
+     *    - state
+     *    - chain info
+     *    - payload hash
+     *
+     * 2. Derived export fields (not part of signed body)
+     *    - hidden watermark payload
+     *    - exported rendered image hash
+     *    - viewer snippets
+     *    - render timestamp
+     *
+     * DEVELOPER TAKEAWAY
+     * ------------------
+     * Keep a stable signing boundary.
+     * If a field is derived from export/render time data, think very carefully
+     * before adding it to the signed manifest body.
+     */
 
-    const geom = renderSubtlePixelMark(
+    // Step 1: finalize the canonical manifest first.
+    // This gives us the stable manifest hash that later layers can reference.
+    const canonicalManifest = await finalizeManifest(manifest);
+
+    // Step 2: render the visible mark using the canonical manifest hash.
+    // The decorative pixels intentionally derive from this stable short hash.
+    let rendered = copyCanvas(payloadCanvas);
+    let ctx = rendered.getContext("2d");
+    let geom = renderSubtlePixelMark(
       ctx,
       {
-        stateCode: manifest.visible_state,
-        hashShort: manifest.manifest_hash_short,
+        stateCode: canonicalManifest.visible_state,
+        hashShort: canonicalManifest.manifest_hash_short,
         baseAlpha: viewerStyle.baseAlpha,
         hoverAlpha: viewerStyle.hoverAlpha,
         hoverGlowAlpha: viewerStyle.hoverGlowAlpha,
@@ -763,34 +883,43 @@
       hoverOn
     );
 
+    // Step 3: create the hidden watermark from the CANONICAL manifest hash.
+    // This is the key change: the hidden watermark points to the stable signed
+    // manifest hash, not to a later export-only variant.
     const hiddenPayload = {
       v: PROTOCOL_VERSION,
-      state_code: manifest.visible_state,
-      asset_id_short: manifest.asset_id.slice(0, 12),
-      manifest_hash_short: manifest.manifest_hash_short,
-      manifest_type: manifest.manifest_type,
-      checksum: manifest.manifest_hash_short.slice(0, 4),
+      state_code: canonicalManifest.visible_state,
+      asset_id_short: canonicalManifest.asset_id.slice(0, 12),
+      manifest_hash_short: canonicalManifest.manifest_hash_short,
+      manifest_type: canonicalManifest.manifest_type,
+      checksum: canonicalManifest.manifest_hash_short.slice(0, 4),
     };
 
+    // Step 4: embed the hidden watermark into the rendered image.
     const embeddedCanvas = embedHiddenWatermark(rendered, hiddenPayload);
+
+    // Step 5: compute export-only metadata.
+    // These fields are useful for packaging and UX, but they are NOT part of
+    // the canonical signed manifest body.
+    const exportManifest = {
+      ...canonicalManifest,
+      visible_mark: canonicalManifest.visible_state,
+      hidden_watermark: hiddenPayload,
+      hover_reveal_enabled: true,
+      rendered_at: nowIso(),
+      exported_canvas_hash: await canvasHash(embeddedCanvas),
+      viewer_embed: {
+        css: viewerCssSnippet(),
+        html: viewerHtmlSnippet(canonicalManifest.visible_state),
+        note: "Hover brightening is viewer behavior. The baked PNG only stores the subtle mark.",
+      },
+    };
 
     return {
       payloadCanvas,
       renderedCanvas: embeddedCanvas,
       markGeom: geom,
-      manifest: {
-        ...manifest,
-        visible_mark: manifest.visible_state,
-        hidden_watermark: hiddenPayload,
-        hover_reveal_enabled: true,
-        rendered_at: nowIso(),
-        exported_canvas_hash: await canvasHash(embeddedCanvas),
-        viewer_embed: {
-          css: viewerCssSnippet(),
-          html: viewerHtmlSnippet(manifest.visible_state),
-          note: "Hover brightening is viewer behavior. The baked PNG only stores the subtle mark.",
-        },
-      },
+      manifest: exportManifest,
     };
   }
 
@@ -1375,7 +1504,8 @@
                 e("div", { className: "kv", key: "n2" }, [e("div", { className: "k" }, "External path"), e("div", { className: "v" }, "Uploads become EXT and do not claim AI origin")]),
                 e("div", { className: "kv", key: "n3" }, [e("div", { className: "k" }, "Visible mark"), e("div", { className: "v" }, "Subtle, pixelated, and brightens on hover")]),
                 e("div", { className: "kv", key: "n4" }, [e("div", { className: "k" }, "Hidden mark"), e("div", { className: "v" }, "Prototype LSB payload in pixel data")]),
-                e("div", { className: "kv", key: "n5" }, [e("div", { className: "k" }, "Verifier"), e("div", { className: "v" }, "Checks signature, hidden payload, and rendered hash")]),
+                e("div", { className: "kv", key: "n5" }, [e("div", { className: "k" }, "Verifier"), e("div", { className: "v" }, "Checks canonical signature, hidden payload, and exported image hash")]),
+                e("div", { className: "small", key: "n6" }, "Developer note: not all functions are pure in this prototype, and that is okay. The critical requirement is a stable canonical manifest boundary. If future changes mix UI/export fields back into the signed body, verifier bugs can return."),
               ])),
             ]),
           ])
