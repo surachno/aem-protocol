@@ -1,4 +1,4 @@
-# AEM Protocol — LimeWire Partner Pitch
+# AEM Protocol — LimeWire (LMWR) Partner Pitch
 The image shows the result. The manifest proves how it got there.
 
 ## Summary
@@ -16,7 +16,7 @@ Designed for platforms where **creation, remixing, and ownership matter**.
 
 ## Why this matters for LimeWire
 
-LimeWire sits at the intersection of:
+The LimeWire ecosystem, including the LimeWire Network, sits at the intersection of:
 
 - AI content creation  
 - creator monetization  
