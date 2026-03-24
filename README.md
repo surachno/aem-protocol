@@ -1,37 +1,63 @@
-# AEM Protocol - Trust lives in the manifest, not in the pixels.
+# AEM Protocol
+
+> Making AI image evolution visible.
 
 Hi — and welcome 👋
 
-This repository is a small prototype exploring a simple idea:
+This is a small prototype exploring a simple idea:
 
-> What if AI-generated images could carry a visible, human-readable history of how they’ve been edited?
-
-That’s what AEM Protocol is about.
+> What if images could carry a visible, human-readable history of how they’ve been edited?
 
 AEM stands for **AI Edit Mark**.
 
+---
+
 ## What this project is
 
-This repo contains an experimental prototype for tracking how AI images evolve over time.
+AEM Protocol is a prototype for tracking how AI-generated images evolve over time.
 
-Instead of only asking:
+Each image carries:
 
-> “Was this image AI-generated?”
+* a **visible state** (AI·0 → AI·9, EXT, X)
+* a **hidden watermark**
+* a **signed manifest**
 
-AEM tries to also answer:
+Together, these form a lightweight provenance system.
 
-> “What happened to this image after it was created?”
+---
 
-The prototype uses a simple state system:
+## Try it (quick flow)
 
-- `AI·0` → original AI-generated image
-- `AI·1–8` → verified edits
-- `AI·9` → many verified edits
-- `EXT` → external image (not AI-origin certified)
-- `X` → broken or unverifiable provenance
+If you're opening the demo for the first time:
+
+1. Click **“New generated demo image → AI·0”**
+2. Apply an edit (e.g. Brighten → AI·1)
+3. Click **“Download package”**
+4. Switch to **Verifier mode** and load the file
+
+You should see:
+
+* **Verified: AI·1**
+
+Try the tamper test to see it break → **X**
+
+---
+
+## State model
+
+AEM uses a simple, visible system:
+
+| State  | Meaning                              |
+| ------ | ------------------------------------ |
+| AI·0–9 | AI origin + number of verified edits |
+| EXT    | External origin (no AI claim)        |
+| X      | Broken or unverifiable provenance    |
+
+---
 
 ## Architecture Overview
 
+```
           ┌────────────────────────────┐
           │        Editor (UI)         │
           │        (ui.js)             │
@@ -51,95 +77,77 @@ The prototype uses a simple state system:
                        │
                        ▼
           ┌────────────────────────────┐
-          │        Export Package      │
+          │     Export / Transport     │
+          │                            │
+          │  Core:                     │
+          │  - image (PNG)             │
+          │  - manifest (JSON)         │
+          │                            │
+          │  Optional bundle:          │
+          │  - aem_package.json        │
           └────────────┬───────────────┘
                        │
                        ▼
           ┌────────────────────────────┐
           │        Verifier            │
           └────────────────────────────┘
-
-**Canonical manifest is signed.  
-Everything else is derived.**
-
-Only the stable provenance data is signed.  
-The image, watermark, and UI are generated from that data and are not part of the signature.
-
-## What’s in here
-
-This project currently includes:
-
-- a browser-based prototype
-- a subtle visible watermark concept
-- a hover-to-reveal viewer effect
-- a lightweight manifest format
-- a simple verifier flow
-- protocol notes and repo documentation
-
-It is intentionally lightweight and easy to inspect.
-
-## Project status
-
-This is a **prototype / exploration project**.
-
-Please assume:
-
-- it is **not production-ready**
-- it is **not actively maintained**
-- it comes **with no guarantees**
-- you use it **at your own risk**
-
-I’m sharing it as:
-
-- a concept
-- a conversation starter
-- a reference point for future experiments
-
-## AI assistance and human review
-
-This repository was built with substantial AI assistance and human review.
-
-The concept, framing, state model, documentation, and review decisions are human-directed.  
-The implementation was AI-assisted and should be treated accordingly: useful for exploration, but not something to trust blindly.
-
-If you use or build on this project, please review the code yourself and make your own decisions about correctness, safety, and suitability.
-
-## Important limitations
-
-This prototype does **not** implement:
-
-- secure key management
-- production-grade watermarking
-- strong attack resistance
-- cross-platform trust infrastructure
-- hardened verification guarantees
-- legal, compliance, or policy-grade provenance
-
-So please don’t rely on it for anything critical.
-
-## Running it locally
-
-If the prototype uses plain browser files, opening `index.html` may be enough.
-
-For example:
-
-```bash
-open index.html
 ```
 
-Some versions of the demo load React from a CDN, so an internet connection may still be needed in the browser.
+**Canonical manifest is signed.
+Everything else is derived.**
 
-## Why I made this
+The manifest is the source of truth.
+The image, watermark, and UI are derived from it and must remain outside the signed boundary to avoid circular dependencies.
 
-AI images are everywhere now, and they often change a lot after being created.
+---
 
-I got curious about whether there could be a simple, human-readable way to show:
+## Key idea
 
-- where an image started
-- whether it stayed in a trusted edit flow
-- and when that trust broke
+> The image shows the result.
+> The manifest proves how it got there.
 
-This repo is one attempt at exploring that idea.
+AEM separates:
+
+* what users **see**
+* from what systems can **verify**
+
+---
+
+## What you can do in the demo
+
+* generate an image → `AI·0`
+* apply trusted edits → `AI·1`, `AI·2`, …
+* upload external images → `EXT`
+* simulate broken trust → `X`
+* export a package
+* verify it
+* test tampering
+
+---
+
+## Transport format
+
+The demo uses a bundled file:
+
+* `aem_package.json`
+
+This contains:
+
+* the image (as data URL)
+* the manifest
+* optional metadata
+
+However:
+
+> AEM Protocol itself is transport-agnostic.
+
+The core system is:
+
+* image + manifest
+
+The package format is just a convenience layer.
+
+---
 
 ## Known Limitations
 
@@ -147,53 +155,46 @@ This project is a prototype and has important limitations.
 
 ### Browser-based trust
 
-- signing keys are stored in the browser
-- there is no external trust authority
-- any user controls their own signing identity
-
-→ This is suitable for demonstration, not production trust
+* signing keys are stored in the browser
+* no external trust authority
+* users control their own signing identity
 
 ---
 
 ### Lightweight watermarking
 
-- hidden watermark uses simple pixel encoding
-- not robust against:
-  - compression
-  - resizing
-  - adversarial edits
+* simple pixel encoding (LSB-style)
+* not robust against compression, resizing, or adversarial edits
 
 ---
 
 ### No origin attestation
 
-- `AI·0` is created locally
-- there is no cryptographic proof from a generator
-
-→ real systems would require generator-signed origin
+* `AI·0` is created locally
+* no cryptographic proof from a generator
 
 ---
 
 ### Not adversarially secure
 
-- the system detects simple tampering
-- but is not hardened against determined attackers
+* detects simple tampering
+* not hardened against determined attackers
 
 ---
 
 ### Prototype architecture
 
-- recently modularized from a single file
-- cross-module dependencies are still fragile
-- no automated tests yet
+* recently modularized
+* some cross-module dependencies remain fragile
+* no automated tests
 
 ---
 
 ### No backend
 
-- no key management service
-- no revocation
-- no identity layer
+* no key management
+* no identity layer
+* no revocation
 
 ---
 
@@ -201,47 +202,38 @@ This project is a prototype and has important limitations.
 
 AEM Protocol is intended for:
 
-- experimentation
-- design exploration
-- discussion
+* experimentation
+* design exploration
+* discussion
 
-It is not a production-ready provenance system.
+It is **not a production-ready provenance system**.
+
+---
+
+## Why this exists
+
+AI content currently lacks:
+
+* visible edit history
+* clear origin signals
+* understandable trust indicators
+
+AEM explores a simple idea:
+
+> Can provenance be made visible, not just verifiable?
+
+---
+
+## ☕ Support
+
+This project started as a small curiosity about how AI images evolve.
+
+If you found it interesting, useful, or it sparked an idea — You are welcome.
+
+No expectations — just appreciated 🙏
+
+---
 
 ## License
 
-MIT.
-
-That means you are generally free to:
-
-- use the code
-- modify it
-- fork it
-- build on it
-
-But it also means:
-
-> this project is provided “as is”, without warranty.
-
-See `LICENSE` and `DISCLAIMER.md`.
-
-## Contributing
-
-This project is not actively maintained, but thoughtful contributions are still welcome.
-
-Please read:
-
-- `CONTRIBUTING.md`
-- `docs/spec.md`
-
-before making bigger changes.
-
-## Big picture
-
-If this idea ever grows, I imagine something like:
-
-> a shared way to track how AI media evolves over time
-
-But for now, this is just a small prototype.
-
-Thanks for taking a look.
-
+MIT — use at your own risk.
