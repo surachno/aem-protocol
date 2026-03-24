@@ -166,7 +166,7 @@ generator/editor integrations
 Tradeoff:
 needs infrastructure
 
-D. NFT / Web3 metadata link
+## D. NFT / Web3 metadata link
 
 You do not put the whole AEM package on-chain usually.
 
@@ -199,7 +199,7 @@ collector-facing provenance
 Tradeoff:
 on-chain data should stay minimal
 
-E. Embedded image metadata
+## E. Embedded image metadata
 
 In the future, some AEM data could be stored in image metadata chunks.
 
@@ -211,7 +211,7 @@ Tradeoff:
 metadata may be stripped by platforms
 interoperability gets trickier
 
-F. Verification endpoint
+## F. Verification endpoint
 
 A platform could expose:
 POST /verify
