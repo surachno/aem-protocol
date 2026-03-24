@@ -10,7 +10,7 @@ That’s what AEM Protocol is about.
 
 AEM stands for **AI Edit Mark**.
 
-## What this is
+## What this project is
 
 This repo contains an experimental prototype for tracking how AI images evolve over time.
 
@@ -29,6 +29,51 @@ The prototype uses a simple state system:
 - `AI·9` → many verified edits
 - `EXT` → external image (not AI-origin certified)
 - `X` → broken or unverifiable provenance
+
+## Architecture Overview
+
+          ┌────────────────────────────┐
+          │        Editor (UI)         │
+          │        (ui.js)             │
+          └────────────┬───────────────┘
+                       │
+                       ▼
+          ┌────────────────────────────┐
+          │  Canonical Manifest Layer  │
+          │       (manifest.js)        │
+          │                            │
+          │  - create manifest         │
+          │  - hash                    │
+          │  - sign                    │
+          │  - verify                  │
+          └────────────┬───────────────┘
+                       │
+                       ▼
+          ┌────────────────────────────┐
+          │  Watermark / Image Layer   │
+          │      (watermark.js)        │
+          │                            │
+          │  - render visible mark     │
+          │  - embed hidden payload    │
+          │  - apply edits             │
+          └────────────┬───────────────┘
+                       │
+                       ▼
+          ┌────────────────────────────┐
+          │        Export Package      │
+          │                            │
+          │  - image (PNG)             │
+          │  - manifest (JSON)         │
+          └────────────┬───────────────┘
+                       │
+                       ▼
+          ┌────────────────────────────┐
+          │        Verifier            │
+          │                            │
+          │  - check signature         │
+          │  - read watermark          │
+          │  - compare hashes          │
+          └────────────────────────────┘
 
 ## What’s in here
 
