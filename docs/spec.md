@@ -1,139 +1,141 @@
-# AIM Protocol (AEM-P) — Prototype Spec
+# AEM Protocol — Prototype Spec
 
-This document describes the current prototype direction of AIM Protocol.
+## Overview
 
-It is **not** a formal standard.  
-It is a working concept document for a hobby/research prototype.
+AEM Protocol (AI Edit Mark) is a prototype system for tracking how AI-generated images evolve over time.
 
-## Short summary
-
-AIM Protocol tries to track how AI-generated images evolve over time.
-
-The prototype combines:
-
-- a visible state mark
-- a hidden watermark signal
+Each asset combines:
+- a visible mark (AI·0 → AI·9, EXT, X)
+- a hidden watermark
 - a signed manifest
-- a verifier flow
 
-The goal is to express not only origin, but also what happened after origin.
+---
 
-## Public states
+## State Model
 
-| State | Meaning |
-|------|--------|
-| `AI·0` | trusted AI origin, zero verified edits |
-| `AI·1–8` | trusted AI origin, exact verified edit count |
-| `AI·9` | trusted AI origin, 9+ verified edits |
-| `EXT` | external import, not AI-origin certified |
-| `X` | broken, tampered, or unverifiable |
+The visible state is one of:
 
-## Core anti-abuse rule
+- `AI·0` → `AI·9`
+- `EXT`
+- `X`
 
-`AI·0` must be **minted by a trusted origin authority**, not declared by a user.
+### AI states
+- AI-generated origin
+- verified edit count
 
-That means:
+### EXT
+- external origin
+- no AI-origin claim
+- chain can still be valid
 
-- user uploads should start as `EXT`
-- editors should not mint AI origin
-- broken states should remain broken
+### X
+- broken or unverifiable provenance
 
-## High-level roles
+---
 
-### Origin Authority
-Trusted generation backend or generator integration.
+## Canonical Manifest
 
-Can:
-- mint `AI·0`
-- sign origin manifests
+The system uses a **canonical signed manifest**.
 
-Cannot:
-- pretend uploaded images were born as AI-origin
+### Signed fields (core provenance)
 
-### Trusted Editor
-Compatible editor flow.
+- asset_id
+- origin_type
+- edit_count_verified
+- visible_state
+- chain_status
+- action_type
+- payload_canvas_hash
+- prev_manifest_hash
+- timestamps
+- public_key_jwk
 
-Can:
-- extend valid chains
-- preserve `EXT`
-- set `X` when trust breaks
+### Important rule
 
-Cannot:
-- mint origin
+> Only stable provenance fields are signed.
 
-### Verifier
-Checks:
+---
 
-- signature validity
-- state consistency
-- chain integrity
-- watermark consistency
+## Derived Export Fields (NOT signed)
 
-## State transitions
+These are intentionally excluded from signing:
 
-Allowed:
+- hidden_watermark
+- exported_canvas_hash
+- rendered_at
+- viewer_embed
+- visible_mark (UI label)
 
-```text
-trusted generation -> AI·0
-AI·0..8 + trusted edit -> next numeric state
-AI·8 + trusted edit -> AI·9
-AI·9 + trusted edit -> AI·9
-EXT + trusted edit -> EXT
-AI·0..9 + trust failure -> X
-EXT + trust failure -> X
-X + later action -> X
-```
+---
 
-Forbidden:
+## Design Lesson
 
-```text
-EXT -> AI·0
-X -> AI·0
-upload -> AI·0
-editor -> AI·0
-```
+Earlier versions mixed export fields into the signed manifest, causing:
 
-## Prototype manifest idea
+- `signature_invalid`
+- `hidden_manifest_hash_mismatch`
 
-A manifest may contain fields like:
+### Final rule
 
-```json
-{
-  "protocol_version": 4,
-  "manifest_type": "origin | import | edit | broken",
-  "signer_role": "origin_authority | trusted_editor",
-  "asset_id": "uuid",
-  "origin_type": "ai_generated | external_import",
-  "state": "AI·0 | AI·1..9 | EXT | X",
-  "edit_count_verified": 0,
-  "chain_status": "valid | external | broken",
-  "created_at": "ISO-8601",
-  "updated_at": "ISO-8601",
-  "prev_manifest_hash": "hex | null",
-  "manifest_hash": "hex"
-}
-```
+> Separate **canonical manifest** from **export layer**.
 
-## Trust boundaries
+---
 
-The browser UI is a good place for:
+## Hidden Watermark
 
-- image preview
-- subtle watermark display
-- hover reveal
-- editor controls
-- verifier display
+Encodes:
 
-A backend is the right place for:
+- protocol version
+- visible state
+- asset_id (short)
+- manifest_hash (short)
 
-- generation receipts
-- origin minting
-- signing
-- anti-abuse rules
-- source-of-truth verification
+Purpose:
+- link image → manifest
 
-## Status of this spec
+---
 
-This document is descriptive, not normative.
+## Verification
 
-It exists so the repo has a clear direction and so future readers can understand the intent behind the prototype.
+Verifier checks:
+
+1. signature validity (canonical manifest)
+2. hidden watermark consistency
+3. exported image consistency
+
+Failure → `X`
+
+---
+
+## Metadata-Only Updates
+
+- do not change pixels
+- do not increment edit count
+- create a new signed manifest
+
+---
+
+## Tamper Resistance
+
+Any unsigned modification to the manifest:
+
+→ breaks signature  
+→ results in `X`
+
+---
+
+## Limitations
+
+- browser-based signing
+- no external trust authority
+- lightweight watermarking
+- not adversarially robust
+
+---
+
+## Purpose
+
+AEM Protocol is a **prototype model** for:
+- provenance UX
+- edit tracking
+- AI labeling
