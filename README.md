@@ -41,39 +41,29 @@ The prototype uses a simple state system:
           ┌────────────────────────────┐
           │  Canonical Manifest Layer  │
           │       (manifest.js)        │
-          │                            │
-          │  - create manifest         │
-          │  - hash                    │
-          │  - sign                    │
-          │  - verify                  │
           └────────────┬───────────────┘
                        │
                        ▼
           ┌────────────────────────────┐
           │  Watermark / Image Layer   │
           │      (watermark.js)        │
-          │                            │
-          │  - render visible mark     │
-          │  - embed hidden payload    │
-          │  - apply edits             │
           └────────────┬───────────────┘
                        │
                        ▼
           ┌────────────────────────────┐
           │        Export Package      │
-          │                            │
-          │  - image (PNG)             │
-          │  - manifest (JSON)         │
           └────────────┬───────────────┘
                        │
                        ▼
           ┌────────────────────────────┐
           │        Verifier            │
-          │                            │
-          │  - check signature         │
-          │  - read watermark          │
-          │  - compare hashes          │
           └────────────────────────────┘
+
+**Canonical manifest is signed.  
+Everything else is derived.**
+
+Only the stable provenance data is signed.  
+The image, watermark, and UI are generated from that data and are not part of the signature.
 
 ## What’s in here
 
