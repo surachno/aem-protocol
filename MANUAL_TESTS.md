@@ -1,6 +1,8 @@
-AEM Protocol, Prototype — Test Manual
+# AEM Protocol, Prototype — Test Manual
 
 This manual describes how to test all core behaviors of the AEM demo UI.
+
+---
 
 1. Generated Image (AI Origin)
 
@@ -11,6 +13,8 @@ Expected
 - State becomes: AI·0
 - Edit count: 0
 - Chain status: valid
+
+---
 
 Purpose
 Tests trusted origin creation.
@@ -31,6 +35,8 @@ Expected
 Purpose
 Tests verified edit tracking.
 
+---
+
 3. External Import (EXT)
 
 Steps
@@ -42,6 +48,8 @@ Expected
 
 Purpose
 Prevents fake AI-origin claims.
+
+---
 
 4. Broken Chain (X)
 
@@ -55,6 +63,8 @@ Expected
 Purpose
 Simulates untrusted editing outside the system.
 
+---
+
 5. Hover Watermark
 
 Steps
@@ -66,6 +76,8 @@ Expected
 
 Purpose
 Tests human-visible watermark UX.
+
+---
 
 6. Export + Verify
 
@@ -83,6 +95,8 @@ Expected
 
 Purpose
 Tests full pipeline.
+
+---
 
 ⚙️ 7. Metadata Only (detailed description)
 What it does
@@ -162,7 +176,10 @@ Test C (repeat)
 Click Metadata Only multiple times
 → always same visible state
 → always valid verification
-🔥 8. Tamper Test (DETAILED)
+
+---
+
+🔥 8. Tamper Test (detailed description)
 
 What it does
 
