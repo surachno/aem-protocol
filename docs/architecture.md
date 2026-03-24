@@ -113,3 +113,52 @@ This architecture demonstrates:
 - clean trust separation
 - provenance modeling
 - UX patterns for AI content
+
+## Architecture Overview
+
+          ┌────────────────────────────┐
+          │        Editor (UI)         │
+          │        (ui.js)             │
+          └────────────┬───────────────┘
+                       │
+                       ▼
+          ┌────────────────────────────┐
+          │  Canonical Manifest Layer  │
+          │       (manifest.js)        │
+          │                            │
+          │  - create manifest         │
+          │  - hash                    │
+          │  - sign                    │
+          │  - verify                  │
+          └────────────┬───────────────┘
+                       │
+                       ▼
+          ┌────────────────────────────┐
+          │  Watermark / Image Layer   │
+          │      (watermark.js)        │
+          │                            │
+          │  - render visible mark     │
+          │  - embed hidden payload    │
+          │  - apply edits             │
+          └────────────┬───────────────┘
+                       │
+                       ▼
+          ┌────────────────────────────┐
+          │        Export Package      │
+          │                            │
+          │  - image (PNG)             │
+          │  - manifest (JSON)         │
+          └────────────┬───────────────┘
+                       │
+                       ▼
+          ┌────────────────────────────┐
+          │        Verifier            │
+          │                            │
+          │  - check signature         │
+          │  - read watermark          │
+          │  - compare hashes          │
+          └────────────────────────────┘
+          
+The system separates **signed provenance (manifest)** from **derived output (image + watermark)** to avoid circular dependencies and ensure stable verification.
+**Canonical manifest is signed.  
+Everything else is derived.**
