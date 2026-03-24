@@ -562,14 +562,14 @@ function App() {
             ),
 
             e("div", { key: "right" }, [
-              panel("Manifest preview", e("pre", null, manifest ? JSON.stringify(manifest, null, 2) : "Loading…")),
-              panel("Notes", e("div", null, [
-                e("div", { className: "kv", key: "n1" }, [e("div", { className: "k" }, "Generated path"), e("div", { className: "v" }, "Creates AI·0 using the trusted demo path")]),
-                e("div", { className: "kv", key: "n2" }, [e("div", { className: "k" }, "External path"), e("div", { className: "v" }, "Uploads become EXT and do not claim AI origin")]),
-                e("div", { className: "kv", key: "n3" }, [e("div", { className: "k" }, "Visible mark"), e("div", { className: "v" }, "Subtle, pixelated, and brightens on hover")]),
-                e("div", { className: "kv", key: "n4" }, [e("div", { className: "k" }, "Hidden mark"), e("div", { className: "v" }, "Prototype LSB payload in pixel data")]),
-                e("div", { className: "kv", key: "n5" }, [e("div", { className: "k" }, "Verifier"), e("div", { className: "v" }, "Checks canonical signature, hidden payload, and exported image hash")]),
-                e("div", { className: "small", key: "n6" }, "Developer note: the signed manifest and the export package are intentionally treated as two layers. If future changes mix export-only fields back into the signed manifest body, verifier mismatches can return."),
+              panel("Manifest preview (current package view)", e("pre", null, manifest ? JSON.stringify(manifest, null, 2) : "Loading…")),
+              panel("How this works", e("div", { className: "stack" }, [
+                e("div", { className: "small" }, "Generated path → Creates AI·0 using the trusted demo path"),
+                e("div", { className: "small" }, "External path → Uploads become EXT and do not claim AI origin"),
+                e("div", { className: "small" }, "Visible mark → Subtle, pixelated, and brightens on hover"),
+                e("div", { className: "small" }, "Hidden mark → Prototype LSB payload embedded in pixel data"),
+                e("div", { className: "small" }, "Verifier → Checks canonical manifest signature, hidden watermark consistency, and exported image consistency"),
+                e("div", { className: "small" }, "Developer note → The signed manifest and the export package are intentionally treated as separate layers")
               ])),
             ]),
           ])
