@@ -1,71 +1,87 @@
-🧾 AEM-P — AI Edit Mark Provenance
+# AEM Protocol — Partner Pitch
 
-AEM-P is a system that tracks and verifies how AI-generated images change over time.
+## Summary
 
-❌ The problem
+AEM Protocol is a lightweight system for tracking how AI-generated images evolve over time.
 
-Today, AI detection answers:
+It combines:
+- visible edit states
+- hidden watermarking
+- signed provenance
 
-“Was this AI-generated?”
+---
 
-But it cannot answer:
+## Why it matters
 
-“What happened to this image after it was created?”
+AI content lacks:
+- transparent edit history
+- clear origin signals
+- trust indicators for users
 
-This creates:
+AEM introduces a simple model:
 
-misinformation risk
-lack of trust in edited content
-no audit trail for AI media
+| State | Meaning |
+|------|--------|
+| AI·0–9 | AI origin + edit count |
+| EXT | External origin |
+| X | Broken provenance |
 
-✅ The solution
+---
 
-AEM-P introduces a visible + cryptographic edit history layer:
+## What makes AEM different
 
-AI·0 → original AI image
-AI·1–8 → verified edits
-AI·9 → many edits
-AI·X → broken or untrusted
+- human-readable watermark (not just invisible)
+- edit evolution, not just origin
+- strict verifier model
+- separation of origin vs trust
 
-Each step is:
+---
 
-cryptographically signed
-chained to previous edits
-embedded in the image itself
-🔍 What makes it different
+## Example use cases
 
-Most systems track origin.
+- AI image platforms
+- creator tools
+- marketplaces
+- social media labeling
 
-AEM-P tracks evolution.
+---
 
-⚙️ How it works
-Subtle pixel watermark embedded in image
-Hidden watermark stored in pixels
-Signed JSON manifest (ECDSA)
-Hash chain across edits
-Hover-based reveal in supported viewers
+## Integration idea
 
-💡 Use cases
-AI image platforms (LimeWire, Midjourney-style tools)
-News & media verification
-Creative workflows
-Social platforms
-Marketplaces for AI content
+- generators produce `AI·0`
+- editors increment state
+- external uploads → `EXT`
+- broken edits → `X`
 
-🧱 Current stage
-Working browser prototype AEM-P
-End-to-end:
-edit tracking
-watermarking
-verification
-tamper detection
+---
 
-🚀 Next steps
-API integration with AI generators
-Cross-editor adoption
-Stronger watermarking
-Public verification layer
+## What this prototype shows
 
-🌍 Vision
+- viable UX model
+- working verification loop
+- tamper detection
+- metadata-only updates
 
-A universal “edit history layer” for AI media
+---
+
+## What is not included (yet)
+
+- backend trust authority
+- secure key management
+- strong watermarking
+
+---
+
+## Opportunity
+
+AEM can serve as:
+- a design layer for provenance
+- a standardization starting point
+- a UX pattern for AI disclosure
+
+---
+
+## Closing idea
+
+> AEM is not about proving truth —  
+> it is about making provenance visible and structured.
