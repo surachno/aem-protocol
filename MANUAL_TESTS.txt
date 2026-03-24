@@ -1,6 +1,6 @@
-AEM-P Prototype — Test Manual
+AEM Protocol, Prototype — Test Manual
 
-This manual describes how to test all core behaviors of the AEM-P demo UI.
+This manual describes how to test all core behaviors of the AEM demo UI.
 
 1. Generated Image (AI Origin)
 Steps
