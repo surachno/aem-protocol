@@ -1,4 +1,5 @@
 # AEM Protocol — Partner Pitch
+The image shows the result. The manifest proves how it got there.
 
 ## Summary
 
@@ -11,77 +12,124 @@ It combines:
 
 ---
 
+## The core idea
+
+> The image shows the result.  
+> The manifest proves how it got there.
+
+AEM separates:
+- what users **see**
+- from what systems can **verify**
+
+---
+
 ## Why it matters
 
-AI content lacks:
-- transparent edit history
-- clear origin signals
-- trust indicators for users
+AI-generated content currently lacks:
 
-AEM introduces a simple model:
+- transparent edit history  
+- clear origin signals  
+- understandable trust indicators  
+
+This creates confusion for:
+- users
+- platforms
+- marketplaces
+
+---
+
+## A simple model
+
+AEM introduces a minimal, human-readable state system:
 
 | State | Meaning |
 |------|--------|
-| AI·0–9 | AI origin + edit count |
+| AI·0–9 | AI origin + verified edit count |
 | EXT | External origin |
-| X | Broken provenance |
+| X | Broken or unverifiable provenance |
 
 ---
 
 ## What makes AEM different
 
-- human-readable watermark (not just invisible)
-- edit evolution, not just origin
-- strict verifier model
-- separation of origin vs trust
+### 1. Visible + verifiable
+- watermark is human-readable
+- backed by signed metadata
+
+### 2. Tracks evolution, not just origin
+- focuses on **how content changes over time**
+- not just “AI vs not AI”
+
+### 3. Clear trust states
+- valid (`AI`, `EXT`)
+- broken (`X`)
+- no ambiguity
+
+### 4. Strict architecture
+- canonical manifest is signed
+- image + watermark are derived
+- avoids circular dependencies
 
 ---
 
-## Example use cases
+## Example integration
 
-- AI image platforms
-- creator tools
-- marketplaces
-- social media labeling
+### Generators
+- produce `AI·0`
+- optionally sign origin
+
+### Editors
+- increment edit count (`AI·1 → AI·2`)
+- sign new manifest
+
+### External uploads
+- marked as `EXT`
+- no false AI claims
+
+### Untrusted edits
+- chain breaks → `X`
 
 ---
 
-## Integration idea
+## What the prototype demonstrates
 
-- generators produce `AI·0`
-- editors increment state
-- external uploads → `EXT`
-- broken edits → `X`
-
----
-
-## What this prototype shows
-
-- viable UX model
-- working verification loop
+- working editor + verifier loop
 - tamper detection
 - metadata-only updates
+- clear UX for provenance
 
 ---
 
 ## What is not included (yet)
 
 - backend trust authority
-- secure key management
-- strong watermarking
+- secure key infrastructure
+- generator-issued signatures
+- robust watermarking
 
 ---
 
-## Opportunity
+## Where this fits
 
-AEM can serve as:
-- a design layer for provenance
-- a standardization starting point
-- a UX pattern for AI disclosure
+AEM can act as:
+
+- a **UX layer** for provenance  
+- a **lightweight protocol** for tracking edits  
+- a **bridge** between creators, tools, and platforms  
+
+---
+
+## Opportunity for partners
+
+Platforms can:
+
+- increase transparency without heavy UX
+- provide users with understandable trust signals
+- differentiate with responsible AI tooling
 
 ---
 
 ## Closing idea
 
-> AEM is not about proving truth —  
-> it is about making provenance visible and structured.
+> AEM is not about proving absolute truth —  
+> it is about making provenance visible, structured, and understandable.
