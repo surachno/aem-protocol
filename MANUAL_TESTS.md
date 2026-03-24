@@ -4,7 +4,7 @@ This manual describes how to test all core behaviors of the AEM demo UI.
 
 ---
 
-1. Generated Image (AI Origin)
+## 1. Generated Image (AI Origin)
 
 Steps
 Click: New generated demo image → AI·0
@@ -19,7 +19,7 @@ Expected
 Purpose
 Tests trusted origin creation.
 
-2. Trusted Edits
+## 2. Trusted Edits
 
 Steps
 Start from AI·0
@@ -37,7 +37,7 @@ Tests verified edit tracking.
 
 ---
 
-3. External Import (EXT)
+## 3. External Import (EXT)
 
 Steps
 Upload an image via External import path
@@ -51,7 +51,7 @@ Prevents fake AI-origin claims.
 
 ---
 
-4. Broken Chain (X)
+## 4. Broken Chain (X)
 
 Steps
 Click: Force broken chain → X
@@ -65,7 +65,7 @@ Simulates untrusted editing outside the system.
 
 ---
 
-5. Hover Watermark
+## 5. Hover Watermark
 
 Steps
 Move mouse over watermark (bottom-right)
@@ -79,7 +79,7 @@ Tests human-visible watermark UX.
 
 ---
 
-6. Export + Verify
+## 6. Export + Verify
 
 Steps
 Click: Download package
@@ -98,7 +98,8 @@ Tests full pipeline.
 
 ---
 
-⚙️ 7. Metadata Only (detailed description)
+## 7. Metadata Only (detailed description)
+
 What it does
 
 The Metadata Only button creates a new signed version of the asset without changing the image content.
@@ -179,7 +180,7 @@ Click Metadata Only multiple times
 
 ---
 
-🔥 8. Tamper Test (detailed description)
+## 8. Tamper Test (detailed description)
 
 What it does
 
