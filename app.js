@@ -1504,7 +1504,8 @@
                 e("div", { className: "small", key: "t1" }, "The tamper test modifies the manifest without recomputing the signature. The verifier should reject it."),
                 e("div", { className: "small", key: "t2" }, "Useful examples:"),
                 e("pre", { key: "t3" }, '{"visible_state":"AI·9"}\n{"edit_count_verified":0}\n{"origin_type":"ai_generated"}\n{"chain_status":"valid"}'),
-                e("div", { className: "small", key: "t4" }, "Expected result: Verification failed → X, often with signature_invalid or another mismatch reason.")
+                e("div", { className: "small", key: "t4" }, "Expected result: Verification failed → X, often with signature_invalid or another mismatch reason."),
+                e("div", { key: "t5" }, "For a more detailed test manual use file MANUAL_TESTS.txt")
               ])),
             ]),
 
