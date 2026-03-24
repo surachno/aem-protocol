@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AEM-P — Hover + EXT Demo</title>
+  <title>AEM Protocol — Hover + EXT Demo</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
@@ -23,7 +23,10 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
 
-  <!-- Main application logic -->
+  <!-- Split runtime modules -->
+  <script src="./manifest.js"></script>
+  <script src="./watermark.js"></script>
+  <script src="./ui.js"></script>
   <script src="./app.js"></script>
 </body>
 </html>

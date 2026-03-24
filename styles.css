@@ -1,5 +1,5 @@
 /* =========================================================
-   AEM-P DEMO — COMMENTED STYLESHEET
+   AEM Protocol, DEMO — COMMENTED STYLESHEET
    ---------------------------------------------------------
    Main goals of this stylesheet:
    1. Give the prototype a coherent dark UI
@@ -302,8 +302,7 @@ input[type="range"] {
    These classes make key actions stand out a bit more while
    keeping the palette restrained and calm.
    --------------------------------------------------------- */
-
-   .btnMode, .btnGenerate, .btnEdit, .btnSpecial, .btnExport {
+.btnMode, .btnGenerate, .btnEdit, .btnSpecial, .btnExport {
   background: linear-gradient(180deg, #17324a 0%, #112638 100%);
   border-color: #3d6282;
 }
