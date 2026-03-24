@@ -570,12 +570,12 @@ function App() {
             e("div", { key: "right" }, [
               panel("Manifest preview (current package)", e("pre", null, manifest ? JSON.stringify(manifest, null, 2) : "Loading…")),
               panel("How this works", e("div", { className: "stack" }, [
-                e("div", { className: "small" }, "AI·0 Generated path → Creates AI·0 using the trusted demo path"),
-                e("div", { className: "small" }, "AI·1 If current state is AI·0, it becomes AI·1 after a trusted edit"),
-                e("div", { className: "small" }, "AI·2 Then AI·2, and so on"),
-                e("div", { className: "small" }, "AI·9 Remains the same after any trusted edits"),
-                e("div", { className: "small" }, "EXT  Uploads become 'External path' and do not claim AI origin"),
-                e("div", { className: "small" }, "X    If current state is X, it stays X (broken trust chain)"),
+                e("div", { className: "small" }, "AI·0 - Generated path: AI·0 creation using the trusted demo path"),
+                e("div", { className: "small" }, "AI·1 - If current state is AI·0, it becomes AI·1 after a trusted edit"),
+                e("div", { className: "small" }, "AI·2 - Then AI·2, and so on"),
+                e("div", { className: "small" }, "AI·9 - Remains the same after any trusted edits"),
+                e("div", { className: "small" }, "EXT  - Uploads become 'External path': no claim AI origin"),
+                e("div", { className: "small" }, "X    - If current state is X, it stays X (broken trust chain)"),
                 e("div", { className: "small" }, ""),
                 e("div", { className: "small" }, "Visible mark → Subtle, pixelated, and brightens on hover"),
                 e("div", { className: "small" }, "Hidden mark → Prototype LSB payload embedded in pixel data"),
