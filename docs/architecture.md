@@ -52,6 +52,9 @@
 **Canonical manifest is signed.  
 Everything else is derived.**
 
+Transport formats (e.g. aem_package.json) are not part of the core protocol.
+They are implementation-specific containers.
+
 Only the stable provenance data is signed.  
 The image, watermark, and UI are generated from that data and are not part of the signature.
 
