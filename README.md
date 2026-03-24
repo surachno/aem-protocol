@@ -1,4 +1,4 @@
-# AIM Protocol (AEM-P)
+# AEM Protocol
 
 Hi — and welcome 👋
 
@@ -6,10 +6,9 @@ This repository is a small prototype exploring a simple idea:
 
 > What if AI-generated images could carry a visible, human-readable history of how they’ve been edited?
 
-That’s what AIM Protocol is about.
+That’s what AEM Protocol is about.
 
-AIM stands for **Adaptive Integrity Model**.  
-AEM-P is the more technical name: **AI Edit Mark Protocol**.
+AEM stands for **AI Edit Mark**.
 
 ## What this is
 
@@ -19,7 +18,7 @@ Instead of only asking:
 
 > “Was this image AI-generated?”
 
-AIM tries to also answer:
+AEM tries to also answer:
 
 > “What happened to this image after it was created?”
 
