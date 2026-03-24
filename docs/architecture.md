@@ -1,91 +1,115 @@
-# AIM Protocol — Architecture Notes
+# AEM Protocol — Architecture Notes
 
-This file describes the intended shape of the prototype and the likely path toward a more realistic implementation.
+## Overview
 
-## Current prototype shape
+The prototype consists of:
 
-A browser-based prototype can reasonably demonstrate:
+- browser-based editor
+- built-in verifier
+- manifest + watermark system
 
-- visible watermark states
-- hover reveal behavior
-- lightweight manifests
-- simple signature flows
-- local verifier UI
+---
 
-That is enough to explore the concept.
+## Core Design
 
-## Suggested real architecture
+The system is split into two layers:
 
-For a more serious integration:
+### 1. Canonical signed manifest
+- stable
+- deterministic
+- signed
 
-```text
-React frontend
-   ↓
-Your backend (origin authority / editor API / verifier)
-   ↓
-AI generation provider
-```
+### 2. Derived export layer
+- rendered image
+- hidden watermark
+- UI metadata
 
-This matters because the trust boundary should live in the backend, not in the browser.
+---
 
-## Why React is still useful
+## Why this matters
 
-React is a good fit for:
+Earlier versions mixed both layers.
 
-- prompt UI
-- image gallery / asset view
-- editor UI
-- state visualization
-- hover-reveal watermark experience
-- verifier screens
+This caused:
 
-React is **not** the best place for:
+- circular dependencies
+- unstable hashes
+- verification failures
 
-- origin signing
-- secret keys
-- provider credentials
-- trusted receipt validation
+---
 
-## Example service split
+## Final Architecture Flow
 
-### Frontend
-- image generation form
-- upload/import form
-- viewer
-- editor
-- verifier
+### Step 1 — Create canonical manifest
+- collect provenance fields
+- compute payload_canvas_hash
 
-### Backend
-- `POST /generate`
-- `POST /import`
-- `POST /edit`
-- `POST /verify`
+### Step 2 — Sign manifest
+- hash canonical body
+- create signature
 
-### Internal backend modules
-- provider client
-- signing service
-- manifest builder
-- watermark embed/extract
-- transition validator
+### Step 3 — Derive export data
+- generate hidden watermark
+- render visible watermark
+- compute exported image hash
 
-## Make / automation note
+### Step 4 — Package
+- image
+- manifest
+- metadata
 
-Tools like Make can be useful around the system for:
+---
 
-- notifications
-- intake automation
-- partner workflows
-- dashboards
-- operational glue
+## Key Principle
 
-They are less suitable as the deepest trust boundary.
+> The manifest is the source of truth.  
+> The image proves linkage to it.
 
-## Practical next step
+---
 
-If this prototype were taken further, the cleanest next iteration would likely be:
+## Verification Flow
 
-- React frontend
-- small backend
-- explicit split between `Generate AI image` and `Upload external image`
-- AI origin minted only by backend
-- uploaded files always start as `EXT`
+1. load package
+2. verify signature
+3. extract hidden watermark
+4. compare manifest hash
+5. validate image consistency
+6. output state
+
+---
+
+## Trust Model (current)
+
+- browser-held signing key
+- no central authority
+- demonstrative trust only
+
+---
+
+## Trust Model (future)
+
+A stronger system would include:
+
+- backend signing service
+- secure key management
+- generator integration
+- verifiable origin claims
+
+---
+
+## Known Weaknesses
+
+- browser trust boundary
+- simple watermarking
+- no resistance to advanced tampering
+- recent modularization (watch for wiring bugs)
+
+---
+
+## Purpose
+
+This architecture demonstrates:
+
+- clean trust separation
+- provenance modeling
+- UX patterns for AI content
