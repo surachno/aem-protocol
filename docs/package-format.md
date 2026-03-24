@@ -39,35 +39,30 @@ Recommended filename:
 }
 ```
 
-Fields
-package_version
-
+### Fields
+```package_version```
 Integer version of the package container format.
-
-Example:
-
+Example
+```json
 "package_version": 1
-manifest
+```
 
+```manifest```
 The canonical AEM manifest.
-
 This is the main source of truth for:
+- visible state
+- origin type
+- chain status
+- edit count
+- signature
 
-visible state
-origin type
-chain status
-edit count
-signature
-image_data_url
-
+```image_data_url```
 A PNG image encoded as a data URL.
-
 This image may include:
-
-visible watermark
-hidden watermark
-Optional fields
-
+- visible watermark
+- hidden watermark
+  
+### Optional fields
 These are allowed as convenience fields, but are not required by the protocol:
 ```json
 {
@@ -80,45 +75,44 @@ These are allowed as convenience fields, but are not required by the protocol:
 }
 ```
 
-Important rule
-
+### Important rule
 The package file is not the trust boundary.
-
 The trust boundary is:
-the canonical manifest signature
-consistency between manifest and image
-Verification rule
+- the canonical manifest signature
+- consistency between manifest and image
 
+### Verification rule
 A verifier should:
-read the manifest
-verify the canonical signature
-decode the image
-extract hidden watermark
-compare manifest/image consistency
-
+- read the manifest
+- verify the canonical signature
+- decode the image
+- extract hidden watermark
+- compare manifest/image consistency
 If any required check fails:
-return X
+- return X
 
-What is not required
-
+### What is not required
 AEM Package Format does not require:
-blockchain
-NFT metadata
-backend APIs
-a specific storage provider
-Why this exists
+- blockchain
+- NFT metadata
+- backend APIs
+- a specific storage provider
 
+### Why this exists
 This format is useful for:
-browser demos
-API exchange
-developer testing
-single-file export/import
+- browser demos
+- API exchange
+- developer testing
+- single-file export/import
 
 # 2. Alternative transports for AEM
 
 This is where your project gets more flexible and future-proof.
 
+---
+
 ## A. Separate files
+
 Instead of one package file:
 
 - `image.png`
@@ -159,22 +153,24 @@ Instead of files, a server returns:
 }
 ```
 Good for:
-platforms
-backend workflows
-generator/editor integrations
+- platforms
+- backend workflows
+- generator/editor integrations
 
 Tradeoff:
-needs infrastructure
+- needs infrastructure
+
+---
 
 ## D. NFT / Web3 metadata link
 
 You do not put the whole AEM package on-chain usually.
 
 Instead, the NFT metadata can reference:
-asset_id
-manifest_hash
-manifest_url
-image_url
+- asset_id
+- manifest_hash
+- manifest_url
+- image_url
 
 Example conceptual NFT metadata:
 ```json
@@ -192,36 +188,40 @@ Example conceptual NFT metadata:
 ```
 
 Good for:
-marketplaces
-ownership linking
-collector-facing provenance
+- marketplaces
+- ownership linking
+- collector-facing provenance
 
 Tradeoff:
-on-chain data should stay minimal
+- on-chain data should stay minimal
+
+---
 
 ## E. Embedded image metadata
 
 In the future, some AEM data could be stored in image metadata chunks.
 
 Good for:
-tighter file coupling
-fewer separate files
+- tighter file coupling
+- fewer separate files
 
 Tradeoff:
-metadata may be stripped by platforms
-interoperability gets trickier
+- metadata may be stripped by platforms
+- interoperability gets trickier
+
+---
 
 ## F. Verification endpoint
 
 A platform could expose:
-POST /verify
-GET /assets/:id/manifest
+- POST /verify
+- GET /assets/:id/manifest
 
 Good for:
-partner integrations
-public verification pages
-marketplaces
+- partner integrations
+- public verification pages
+- marketplaces
 
 Tradeoff:
-requires backend trust model
+- requires backend trust model
 
