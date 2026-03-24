@@ -1,4 +1,4 @@
-# AEM Protocol
+# AEM Protocol - Trust lives in the manifest, not in the pixels.
 
 Hi — and welcome 👋
 
