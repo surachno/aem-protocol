@@ -31,9 +31,13 @@
                        ▼
           ┌────────────────────────────┐
           │        Export Package      │
-          │                            │
+          │                            |
+          │  Core:                     |
           │  - image (PNG)             │
-          │  - manifest (JSON)         │
+          │  - manifest (JSON)         | 
+          |                            |
+          |  Optional transport:       |
+          │  aem_package.json (bundle) |
           └────────────┬───────────────┘
                        │
                        ▼
