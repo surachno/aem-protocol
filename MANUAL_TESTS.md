@@ -100,8 +100,7 @@ Tests full pipeline.
 
 ## 7. Metadata Only (detailed description)
 
-What it does
-
+### What it does
 The Metadata Only button creates a new signed version of the asset without changing the image content.
 
 Steps
@@ -119,8 +118,7 @@ Expected behavior
 Verification result:
 → ✅ still valid
 
-What actually changes
-
+### What actually changes
 Even though the image looks identical:
 - Field	Changes
 - updated_at	✔️
@@ -129,11 +127,10 @@ Even though the image looks identical:
 - hidden watermark	✔️
 - exported image bytes	✔️ (slightly)
 
-Key concept
+### Key concept
 👉 Metadata Only creates a new cryptographic version, not a visual edit
 
-Why this matters
-
+### Why this matters
 It allows:
 - attribution updates
 - licensing changes
@@ -142,10 +139,8 @@ It allows:
 
 …without affecting the edit count.
 
-Important developer lesson
-
+### Important developer lesson
 This test validates:
-
 “Can the system update provenance without altering visual edit history?”
 
 And also confirms:
@@ -153,8 +148,7 @@ And also confirms:
 - signing boundary is stable
 - hidden watermark stays consistent
 
-Potential confusion
-
+### Potential confusion
 User expectation:
 “Nothing changed”
 
@@ -163,8 +157,7 @@ Reality:
 
 This is correct behavior.
 
-Recommended test variations
-
+### Recommended test variations
 Test A
 AI·0 → Metadata Only → Verify
 → expect AI·0
@@ -182,8 +175,7 @@ Click Metadata Only multiple times
 
 ## 8. Tamper Test (detailed description)
 
-What it does
-
+### What it does
 The Tamper Test simulates:
 “Someone modifies the manifest without access to the signing key”
 
@@ -202,8 +194,7 @@ signature_invalid
 OR
 hidden_manifest_hash_mismatch
 
-Why it fails
-
+### Why it fails
 Because:
 original manifest was signed
 you changed data
@@ -211,12 +202,11 @@ signature no longer matches
 
 👉 verifier detects inconsistency
 
-What this proves
-
+### What this proves
 This is the core security guarantee:
 “You cannot change claims without breaking verification”
 
-Most relevant tamper examples
+### Most relevant tamper examples
 1. Fake AI level
 {"visible_state":"AI·9"}
 👉 Prevents fake “high edit count” claims
@@ -237,7 +227,7 @@ Most relevant tamper examples
 {"asset_id":"fake123"}
 👉 Prevents identity spoofing
 
-What verifier checks
+### What verifier checks
 - signature validity
 - hidden watermark consistency
 - manifest consistency
@@ -245,8 +235,7 @@ What verifier checks
 
 If any fail → X
 
-Important nuance
-
+### Important nuance
 Tamper test:
 - modifies manifest only
 - does NOT modify:
@@ -255,8 +244,7 @@ Tamper test:
 
 This creates mismatch → detected
 
-Developer takeaway
-
+### Developer takeaway
 This test validates:
 - signature enforcement
 - anti-forgery protection
