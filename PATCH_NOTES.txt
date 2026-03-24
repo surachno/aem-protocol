@@ -1,2 +1,0 @@
-Fixed verifier bug: manifests are now signed after all exported fields are attached, so a normal trusted export should no longer fail with signature_invalid.
-Fixed signing boundary bug: manifest_hash, manifest_hash_short, and visible_mark are now excluded from the canonical signed body to avoid self-referential signature drift.
