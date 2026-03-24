@@ -106,6 +106,72 @@ I got curious about whether there could be a simple, human-readable way to show:
 
 This repo is one attempt at exploring that idea.
 
+## Known Limitations
+
+This project is a prototype and has important limitations.
+
+### Browser-based trust
+
+- signing keys are stored in the browser
+- there is no external trust authority
+- any user controls their own signing identity
+
+→ This is suitable for demonstration, not production trust
+
+---
+
+### Lightweight watermarking
+
+- hidden watermark uses simple pixel encoding
+- not robust against:
+  - compression
+  - resizing
+  - adversarial edits
+
+---
+
+### No origin attestation
+
+- `AI·0` is created locally
+- there is no cryptographic proof from a generator
+
+→ real systems would require generator-signed origin
+
+---
+
+### Not adversarially secure
+
+- the system detects simple tampering
+- but is not hardened against determined attackers
+
+---
+
+### Prototype architecture
+
+- recently modularized from a single file
+- cross-module dependencies are still fragile
+- no automated tests yet
+
+---
+
+### No backend
+
+- no key management service
+- no revocation
+- no identity layer
+
+---
+
+## Intended use
+
+AEM Protocol is intended for:
+
+- experimentation
+- design exploration
+- discussion
+
+It is not a production-ready provenance system.
+
 ## License
 
 MIT.
