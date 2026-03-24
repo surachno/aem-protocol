@@ -562,7 +562,7 @@ function App() {
             ),
 
             e("div", { key: "right" }, [
-              panel("Manifest preview (current package view)", e("pre", null, manifest ? JSON.stringify(manifest, null, 2) : "Loading…")),
+              panel("Manifest preview (current package)", e("pre", null, manifest ? JSON.stringify(manifest, null, 2) : "Loading…")),
               panel("How this works", e("div", { className: "stack" }, [
                 e("div", { className: "small" }, "Generated path → Creates AI·0 using the trusted demo path"),
                 e("div", { className: "small" }, "External path → Uploads become EXT and do not claim AI origin"),
