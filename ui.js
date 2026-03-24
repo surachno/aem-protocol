@@ -451,6 +451,11 @@ function App() {
           { key: "subtitle" },
           "Prototype demo with separate generated vs external paths, a subtle pixel watermark, hover reveal, lightweight manifest, and verifier flow."
         ),
+        e(
+          "p",
+          { key: "subtitle" },
+          `Try this: 1. Click "New generated demo image" 2. Apply an edit 3. Download package 4. Verify it in the "Verifier Mode"`
+        ),
         e("div", { className: "topRow", key: "topRow" }, [
           e("button", { className: "btnMode", key: "editorMode", onClick: () => setMode("editor") }, "Editor mode"),
           e("button", { className: "btnMode", key: "verifierMode", onClick: () => setMode("verifier") }, "Verifier mode"),
@@ -472,6 +477,7 @@ function App() {
                 e("h3", { key: "trustedHeading" }, "Trusted generated path"),
                 e("div", { className: "row", key: "trustedRow" }, [
                   e("button", { className: "btnGenerate", onClick: () => initializeGeneratedCanvas(createDemoBaseCanvas(), "demo_generator"), disabled: busy }, "New generated demo image → AI·0"),
+                  e("div", { className: "small", key: "hoverHint" }, "AI·0 = AI-generated, no edits yet."),
                 ]),
 
                 e("h3", { key: "externalHeading" }, "External import path"),
@@ -510,7 +516,7 @@ function App() {
                 e("div", { className: "row", key: "exportRow" }, [
                   e("button", { className: "btnExport", onClick: exportPng, disabled: busy }, "Download PNG"),
                   e("button", { className: "btnExport", onClick: exportManifest, disabled: busy || !manifest }, "Download manifest"),
-                  e("button", { className: "btnExport", onClick: exportPackage, disabled: busy || !manifest }, "Download package"),
+                  e("button", { className: "btnExport", onClick: exportPackage, disabled: busy || !manifest }, "Download package (image + provenance data)"),
                 ]),
 
                 e("h3", { key: "tamperHeading" }, "Tamper test"),
