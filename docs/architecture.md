@@ -1,5 +1,36 @@
 # AEM Protocol — Architecture Notes
 
+## Object storage integration (S3-compatible)
+
+AEM Protocol is compatible with object storage systems such as S3-compatible APIs.
+
+In this model:
+
+* the image is stored as an object (e.g. `image.png`)
+* the manifest is stored as a separate JSON object
+* a small set of AEM fields may be stored as object metadata
+* the relationship between image and manifest is verified via hashes
+
+This avoids bundling large payloads and aligns with scalable storage systems.
+
+---
+
+Conceptual structure:
+
+```
+images/<asset_id>.png
+manifests/<asset_id>.json
+```
+
+Optional metadata:
+
+* aem-asset-id
+* aem-state
+* aem-manifest-hash
+* aem-manifest-url
+
+---
+
 ## Architecture Overview
 
           ┌────────────────────────────┐
