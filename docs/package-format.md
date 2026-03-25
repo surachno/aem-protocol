@@ -21,7 +21,42 @@ The package format simply wraps these together.
 
 ---
 
-## File type
+## Role of the package format
+
+The AEM package (`aem_package.json`) is a convenience transport format.
+
+It bundles:
+
+* image (as data URL)
+* manifest
+* optional metadata
+
+However:
+
+> It is not the preferred format for scalable or production systems.
+
+---
+
+## S3-compatible storage profile
+
+In object storage systems:
+
+* the image is stored as a binary object
+* the manifest is stored as a separate JSON object
+* object metadata may include lightweight AEM fields
+
+Example:
+
+```
+images/<asset_id>.png
+manifests/<asset_id>.json
+```
+
+This is the preferred model for integrations (e.g. LimeWire SDK).
+
+---
+
+## File type package (optional)
 
 Recommended filename:
 
