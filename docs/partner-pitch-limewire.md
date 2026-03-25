@@ -1,16 +1,17 @@
 # AEM Protocol — LimeWire (LMWR) Partner Pitch
-The image shows the result. The manifest proves how it got there.
+
+> The image shows the result. The manifest proves how it got there.
 
 ## Summary
 
 AEM Protocol is a lightweight system for tracking how AI-generated images evolve over time.
 
-It introduces:
+It combines:
 - visible edit states
 - signed provenance
 - simple trust signals
 
-Designed for platforms where **creation, remixing, and ownership matter**.
+It is designed for platforms where **creation, remixing, ownership, and storage** all matter.
 
 ---
 
@@ -18,16 +19,19 @@ Designed for platforms where **creation, remixing, and ownership matter**.
 
 The LimeWire ecosystem, including the LimeWire Network, sits at the intersection of:
 
-- AI content creation  
-- creator monetization  
-- digital ownership  
+- AI content creation
+- creator monetization
+- digital ownership
+- object storage infrastructure
 
-But AI content introduces new challenges:
+That combination is powerful, but it creates new questions:
 
-- unclear origin (AI vs external)
-- no visible edit history
-- difficult trust signals for buyers
-- easy misrepresentation
+- Was this asset AI-generated here, or uploaded from elsewhere?
+- How many trusted edits were made after creation?
+- Is the provenance chain still intact?
+- How can buyers and users see that quickly?
+
+AEM Protocol is designed to make those answers visible and verifiable.
 
 ---
 
@@ -40,6 +44,9 @@ AEM separates:
 - what users **see**
 - from what platforms can **verify**
 
+This is important because provenance should not depend only on UI labels or pixels.  
+It should be anchored in a canonical manifest, then surfaced clearly in the interface.
+
 ---
 
 ## What AEM adds to LimeWire
@@ -50,11 +57,11 @@ Every image carries a simple, readable state:
 
 | State | Meaning |
 |------|--------|
-| AI·0–9 | AI origin + edit count |
+| AI·0–9 | AI origin + verified edit count |
 | EXT | External origin |
 | X | Broken provenance |
 
-This gives buyers immediate context.
+This gives buyers and users immediate context without requiring deep technical inspection.
 
 ---
 
@@ -63,14 +70,15 @@ This gives buyers immediate context.
 AI creation is iterative.
 
 AEM tracks:
-- how many edits were made
-- whether those edits were trusted
-- whether the chain is intact
+- how many trusted edits were made
+- whether the chain is still intact
+- whether the asset began inside a trusted AI generation path or entered externally
 
 This aligns directly with:
 - remixing
 - prompt iteration
 - collaborative creation
+- marketplace reuse
 
 ---
 
@@ -78,66 +86,127 @@ This aligns directly with:
 
 Without AEM:
 - users can claim “AI-generated” falsely
-- external images can be re-uploaded as AI
+- external images can be re-uploaded as if they originated inside the platform
 
 With AEM:
-- external uploads → `EXT`
-- unverifiable edits → `X`
+- trusted generated assets begin at `AI·0`
+- external uploads become `EXT`
+- unverifiable changes become `X`
 
-→ reduces abuse without heavy moderation
+That reduces abuse without needing a heavy-handed moderation experience.
 
 ---
 
 ### 4. Lightweight, UX-first approach
 
-Unlike heavy provenance systems:
+Unlike heavier provenance systems:
 
-- no complex UI required
-- no deep inspection needed
-- signal is **visible on the asset itself**
+- no complex user flow is required
+- no expert reading is required
+- the signal is visible on the asset itself
+- verification still exists behind the scenes
+
+This makes provenance more usable in creator-facing products.
+
+---
+
+## Storage and SDK alignment
+
+AEM Protocol fits naturally into LimeWire's S3-compatible storage direction.
+
+### The important shift
+
+AEM should not be thought of primarily as:
+- a single bundled file format
+
+It should be thought of as:
+- a provenance layer on top of **image objects + manifest objects**
+
+---
+
+## Object-based model
+
+In a LimeWire-style storage setup:
+
+```text
+images/<asset_id>.png
+manifests/<asset_id>.json
+```
+
+Optional metadata on the image object could include:
+
+- `aem-asset-id`
+- `aem-state`
+- `aem-manifest-hash`
+- `aem-manifest-url`
+
+This makes AEM a natural fit for S3-compatible storage systems.
+
+---
+
+## Why this matters
+
+This model avoids:
+
+- large bundled payloads
+- base64-heavy transport as the primary format
+- tight coupling between verification and a demo-specific wrapper file
+
+And it enables:
+
+- scalable storage
+- API-based workflows
+- cleaner SDK integration
+- easier marketplace and NFT linking
 
 ---
 
 ## Web3 alignment
 
-AEM fits naturally into a Web3 stack:
+AEM also fits naturally into a Web3 stack.
 
 ### Off-chain (AEM)
 - manifest
 - watermark
 - edit history
+- verification logic
 
 ### On-chain (optional)
 - ownership
 - minting
 - attribution
 - royalty logic
+- manifest hash anchoring
 
 ---
 
-### Possible connection
+## Possible connection
 
-- hash of AEM manifest → stored on-chain
-- NFT references:
+- hash of canonical AEM manifest → stored on-chain
+- NFT metadata references:
   - asset_id
   - manifest_hash
-- provenance becomes verifiable across systems
+  - manifest location
+- provenance becomes visible in the UI and portable across systems
 
 ---
 
 ## Example flow in LimeWire
 
 ### 1. AI generation
-- user creates image → `AI·0`
-- manifest is created
+- user creates image
+- asset begins as `AI·0`
+- image is stored as an object
+- canonical manifest is created and signed
 
 ### 2. Editing / remixing
-- edits increase state → `AI·1`, `AI·2`
-- each step signed
+- edits increase state → `AI·1`, `AI·2`, etc.
+- each trusted edit creates a new manifest
+- image object and manifest remain linked
 
 ### 3. Uploading external content
-- marked as `EXT`
-- no false AI origin claim
+- external upload becomes `EXT`
+- no false AI-origin claim is made
 
 ### 4. Marketplace listing
 - buyer sees:
@@ -147,24 +216,32 @@ AEM fits naturally into a Web3 stack:
 
 ### 5. Tampering
 - broken chain → `X`
-- visible + verifiable
+- visible and verifiable
 
 ---
 
 ## What this prototype demonstrates
 
-- working editor + verifier loop
+The current prototype demonstrates:
+
+- a working editor + verifier loop
 - visible + hidden watermark linkage
 - tamper detection
-- clean state model
+- metadata-only updates
+- a clear AI / EXT / X state model
 
 ---
 
 ## What is not included (yet)
 
+The current prototype does **not** include:
+
 - backend signing authority
-- generator-issued signatures
+- generator-issued origin signatures
 - strong watermark robustness
+- production key management
+- direct LimeWire SDK integration
+- S3 object metadata implementation
 - on-chain integration
 
 ---
@@ -177,6 +254,7 @@ AEM gives LimeWire:
 - **better buyer trust**
 - **lower moderation burden**
 - **alignment with remix culture**
+- **a provenance layer that fits object storage**
 
 ---
 
@@ -184,16 +262,17 @@ AEM gives LimeWire:
 
 LimeWire could:
 
-- integrate AEM into its AI tools
+- integrate AEM into its AI creation flow
 - display AEM states in the marketplace
-- connect manifests to NFTs
-- position itself as a **transparent AI platform**
+- store images and manifests as linked objects
+- connect manifest hashes to NFT metadata
+- position itself as a **transparent AI + storage platform**
 
 ---
 
 ## Closing idea
 
 > AEM is not about proving absolute truth —  
-> it is about making creation history visible, structured, and meaningful.
+> it is about making creation history visible, structured, and understandable.
 
-In a creator economy, that visibility becomes value.
+For a creator economy platform, that visibility becomes value.
