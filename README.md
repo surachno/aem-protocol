@@ -26,6 +26,11 @@ Together, these form a lightweight provenance system.
 
 ---
 
+<img width="1536" height="1024" alt="AEM_protocol_slide_def" src="https://github.com/user-attachments/assets/9daf1f09-dce7-497a-816d-b8021f2485a6" />
+
+
+---
+
 ## Try it (quick flow)
 
 If you're opening the demo for the first time:
