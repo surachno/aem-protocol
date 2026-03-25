@@ -224,6 +224,56 @@ AEM explores a simple idea:
 
 ---
 
+## Future direction
+
+This prototype currently uses a bundled export format (`aem_package.json`) for simplicity.
+
+However, AEM Protocol is designed to be **transport-agnostic** and aligns naturally with object storage systems (e.g. S3-compatible APIs).
+
+### Likely evolution
+In a more realistic integration:
+
+* images are stored as objects (e.g. `image.png`)
+* manifests are stored as separate JSON objects
+* a small set of AEM fields may be stored as object metadata
+* image ↔ manifest linkage is verified via hashes
+
+### Why this matters
+This avoids:
+
+* large bundled files
+* base64-encoded images
+* tight coupling between storage and verification
+
+And enables:
+
+* scalable storage
+* API-based workflows
+* integration with AI platforms and marketplaces
+
+### Example (conceptual)
+```
+images/<asset_id>.png
+manifests/<asset_id>.json
+```
+
+With optional metadata:
+
+* `aem-asset-id`
+* `aem-state`
+* `aem-manifest-hash`
+* `aem-manifest-url`
+
+The current package format remains useful for:
+
+* demos
+* testing
+* single-file export/import
+
+But it is not required by the protocol.
+
+---
+
 ## ☕ Support
 
 This project started as a small curiosity about how AI images evolve.
