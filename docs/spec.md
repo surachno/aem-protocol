@@ -56,6 +56,20 @@ The system uses a **canonical signed manifest**.
 
 ---
 
+## Storage model (informative)
+
+While the protocol is transport-agnostic, a common deployment model is object storage (S3-compatible).
+
+In such setups:
+
+* the image is stored as a binary object
+* the manifest is stored as a separate JSON object
+* a small set of AEM fields may be stored as object metadata
+
+The canonical manifest remains the source of truth regardless of storage format.
+
+---
+
 ## Derived Export Fields (NOT signed)
 
 These are intentionally excluded from signing:
