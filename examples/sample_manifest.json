@@ -26,5 +26,7 @@
     "x": "...",
     "y": "..."
   },
-  "signature_b64": "MEUCIQDx..."
+  "signature_b64": "MEUCIQDx...",
+  "image_object_key": "images/aem_8f3a1c2d9b7e.png",
+  "manifest_object_key": "manifests/aem_8f3a1c2d9b7e.json"
 }
