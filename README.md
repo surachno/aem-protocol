@@ -149,6 +149,35 @@ The package format is just a convenience layer.
 
 ---
 
+## Storage model (future)
+
+AEM Protocol is transport-agnostic and aligns naturally with object storage systems (e.g. S3-compatible APIs).
+
+In such setups:
+
+* images are stored as objects (e.g. `image.png`)
+* manifests are stored as separate JSON objects
+* a small set of AEM fields may be stored as object metadata
+* image ↔ manifest linkage is verified via hashes
+
+Example (conceptual):
+
+```
+images/<asset_id>.png
+manifests/<asset_id>.json
+```
+
+Optional metadata on the image object:
+
+* `aem-asset-id`
+* `aem-state`
+* `aem-manifest-hash`
+* `aem-manifest-url`
+
+The bundled `aem_package.json` used in this demo is a convenience format for export/import, not a requirement of the protocol.
+
+---
+
 ## Known Limitations
 
 This project is a prototype and has important limitations.
@@ -271,6 +300,31 @@ The current package format remains useful for:
 * single-file export/import
 
 But it is not required by the protocol.
+
+---
+
+## Roadmap (v0.1)
+This project is intentionally small, but a few improvements are planned:
+
+### Stability
+* reduce implicit cross-module dependencies
+* make module boundaries clearer
+
+### UX clarity
+* add a simple guided flow (“Generate → Edit → Verify”)
+* improve labeling (package vs manifest)
+
+### Storage model alignment
+* support image + manifest as separate inputs
+* treat `aem_package.json` as demo format only
+
+### Documentation
+* clarify roles (generator, editor, verifier)
+* expand integration examples
+
+
+
+The goal is not to build a full system, but to explore a clear and usable model for AI provenance.
 
 ---
 
