@@ -139,3 +139,24 @@ AEM Protocol is a **prototype model** for:
 - provenance UX
 - edit tracking
 - AI labeling
+
+---
+
+## Transport and storage
+
+AEM Protocol is transport-agnostic.
+
+The core protocol consists of:
+
+* a canonical manifest
+* an associated image
+
+These may be transported or stored in different ways:
+
+* separate files (`image.png` + `manifest.json`)
+* bundled file (`aem_package.json`)
+* API responses
+* object storage systems (S3-compatible)
+
+The protocol itself does not depend on any specific transport format.
+
