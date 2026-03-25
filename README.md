@@ -96,13 +96,13 @@ AEM uses a simple, visible system:
 **Canonical manifest is signed.
 Everything else is derived.**
 
-The manifest is the source of truth.
+The manifest is the source of truth.  
 The image, watermark, and UI are derived from it and must remain outside the signed boundary to avoid circular dependencies.
 
 ---
 
 ## Key idea
-
+**Trust lives in the manifest, not in the pixels.**
 > The image shows the result.
 > The manifest proves how it got there.
 
