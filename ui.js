@@ -516,7 +516,7 @@ function App() {
                 e("div", { className: "row", key: "exportRow" }, [
                   e("button", { className: "btnExport", onClick: exportPng, disabled: busy }, "Download PNG"),
                   e("button", { className: "btnExport", onClick: exportManifest, disabled: busy || !manifest }, "Download manifest"),
-                  e("button", { className: "btnExport", onClick: exportPackage, disabled: busy || !manifest }, "Download package (image + provenance data)"),
+                  e("button", { className: "btnExport", onClick: exportPackage, disabled: busy || !manifest }, "Download package (demo bundle)"),
                 ]),
 
                 e("h3", { key: "tamperHeading" }, "Tamper test"),
@@ -568,7 +568,7 @@ function App() {
             ),
 
             e("div", { key: "right" }, [
-              panel("Manifest preview (current package)", e("pre", null, manifest ? JSON.stringify(manifest, null, 2) : "Loading…")),
+              panel("Manifest preview (current manifest)", e("pre", null, manifest ? JSON.stringify(manifest, null, 2) : "Loading…")),
               panel("How this works", e("div", { className: "stack" }, [
                 e("div", { className: "small" }, "AI·0 - Generated path: AI·0 creation using the trusted demo path"),
                 e("div", { className: "small" }, "AI·1 - If current state is AI·0, it becomes AI·1 after a trusted edit"),
@@ -590,12 +590,12 @@ function App() {
                 e("div", { className: verifyBadgeClass, key: "verifyState" },
                   verification
                     ? (verification.ok ? "Verified: " + verification.visible_state : "Verification failed → X")
-                    : "Load a package to verify"
+                    : "Load a demo package (bundle of image + manifest). Future integrations may use separate image and manifest files."
                 ),
                 verification
                   ? e("div", { className: "small", key: "verifyReasons" }, verification.ok ? "All checks passed." : "Reasons: " + verification.reasons.join(", "))
                   : null,
-                e("h3", { key: "loadHeading" }, "Load package"),
+                e("h3", { key: "loadHeading" }, "Load package (bundle)"),
                 e("input", { type: "file", accept: ".json,application/json", onChange: loadPackageFile }),
                 e("div", { className: "small", key: "verifyHint" }, "Expected file: a JSON package containing the rendered PNG as a data URL plus the manifest."),
               ])),
