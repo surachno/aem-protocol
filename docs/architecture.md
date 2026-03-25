@@ -61,14 +61,14 @@ Optional metadata:
                        │
                        ▼
           ┌────────────────────────────┐
-          │        Export Package      │
-          │                            |
-          │  Core:                     |
+          │    Storage / Transport     │
+          │                            │
+          │  Core:                     │
           │  - image (PNG)             │
-          │  - manifest (JSON)         | 
-          |                            |
-          |  Optional transport:       |
-          │  aem_package.json (bundle) |
+          │  - manifest (JSON)         │ 
+          │                            │
+          │  Optional transport:       │
+          │  aem_package.json (bundle) │
           └────────────┬───────────────┘
                        │
                        ▼
@@ -96,6 +96,19 @@ The prototype consists of:
 - browser-based editor
 - built-in verifier
 - manifest + watermark system
+
+---
+
+## System roles (conceptual)
+
+AEM Protocol can be understood in terms of three roles:
+
+* **Generator** → creates initial AI assets (`AI·0`)
+* **Editor** → applies trusted edits (`AI·1`, `AI·2`, …)
+* **Verifier** → checks signature, watermark, and consistency
+
+In this prototype, these roles are combined in a single application.
+In real systems, they would typically be separate components.
 
 ---
 
@@ -151,6 +164,7 @@ This caused:
 
 ## Key Principle
 
+Trust lives in the manifest, not in the pixels.
 > The manifest is the source of truth.  
 > The image proves linkage to it.
 
@@ -158,10 +172,10 @@ This caused:
 
 ## Verification Flow
 
-1. load package
-2. verify signature
+1. load image + manifest (or bundle)
+2. verify signature (canonical manifest)
 3. extract hidden watermark
-4. compare manifest hash
+4. compare manifest hash linkage
 5. validate image consistency
 6. output state
 
