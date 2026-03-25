@@ -77,7 +77,7 @@ AEM uses a simple, visible system:
                        │
                        ▼
           ┌────────────────────────────┐
-          │     Export / Transport     │
+          │     Storage / Transport    │
           │                            │
           │  Core:                     │
           │  - image (PNG)             │
