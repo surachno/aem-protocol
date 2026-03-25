@@ -273,3 +273,15 @@ All correctly result in → X
 | Tamper        | X                       |
 | Broken chain  | X                       |
 | Verify        | matches expected state  |
+
+---
+
+## Note on storage model
+
+The current tests use a bundled package (`aem_package.json`) for simplicity.
+
+Future integrations should also test:
+
+* verification using separate image and manifest files
+* object storage scenarios (image + manifest linked via metadata)
+
